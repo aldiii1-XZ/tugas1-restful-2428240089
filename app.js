@@ -52,6 +52,32 @@ let fishPonds = [
 let nextId = 4;
 
 // =====================================================================
+// Helper validasi: memeriksa seluruh field wajib pada body
+// Mengembalikan pesan error (string) atau null bila valid
+// =====================================================================
+function validasiKolam(body) {
+  const { kodeKolam, jenisIkan, jumlahBibit, luasM2, tanggalTebar } = body;
+
+  // field wajib tidak boleh kosong
+  if (!kodeKolam) return 'Field kodeKolam wajib diisi';
+  if (!jenisIkan) return 'Field jenisIkan wajib diisi';
+  if (jumlahBibit === undefined || jumlahBibit === null || jumlahBibit === '')
+    return 'Field jumlahBibit wajib diisi';
+  if (luasM2 === undefined || luasM2 === null || luasM2 === '')
+    return 'Field luasM2 wajib diisi';
+  if (!tanggalTebar) return 'Field tanggalTebar wajib diisi';
+
+  // validasi tipe data number
+  if (typeof jumlahBibit !== 'number')
+    return 'Field jumlahBibit harus berupa angka';
+  if (typeof luasM2 !== 'number')
+    return 'Field luasM2 harus berupa angka';
+
+  // body valid
+  return null;
+}
+
+// =====================================================================
 // GET / - info API (JSON, bukan teks/HTML)
 // =====================================================================
 app.get('/', (req, res) => {
@@ -89,32 +115,6 @@ app.get('/fish-ponds', (req, res) => {
   // tanpa filter: kembalikan seluruh data
   res.json(fishPonds);
 });
-
-// =====================================================================
-// Helper validasi: memeriksa seluruh field wajib pada body
-// Mengembalikan pesan error (string) atau null bila valid
-// =====================================================================
-function validasiKolam(body) {
-  const { kodeKolam, jenisIkan, jumlahBibit, luasM2, tanggalTebar } = body;
-
-  // field wajib tidak boleh kosong
-  if (!kodeKolam) return 'Field kodeKolam wajib diisi';
-  if (!jenisIkan) return 'Field jenisIkan wajib diisi';
-  if (jumlahBibit === undefined || jumlahBibit === null || jumlahBibit === '')
-    return 'Field jumlahBibit wajib diisi';
-  if (luasM2 === undefined || luasM2 === null || luasM2 === '')
-    return 'Field luasM2 wajib diisi';
-  if (!tanggalTebar) return 'Field tanggalTebar wajib diisi';
-
-  // validasi tipe data number
-  if (typeof jumlahBibit !== 'number')
-    return 'Field jumlahBibit harus berupa angka';
-  if (typeof luasM2 !== 'number')
-    return 'Field luasM2 harus berupa angka';
-
-  // body valid
-  return null;
-}
 
 // =====================================================================
 // 2. GET /fish-ponds/:id - ambil satu data (objek langsung)
@@ -174,6 +174,86 @@ app.post('/fish-ponds', (req, res) => {
     status: 'success',
     message: 'Data berhasil ditambahkan',
     data: baru,
+  });
+});
+
+// =====================================================================
+// 4. PUT /fish-ponds/:id - ubah seluruh data (penggantian penuh)
+// Body: { "kodeKolam": "K-04", "jenisIkan": "nila", "jumlahBibit": 2000, "luasM2": 20, "tanggalTebar": "2026-09-10" }
+// =====================================================================
+app.put('/fish-ponds/:id', (req, res) => {
+  // ubah parameter id menjadi angka
+  const id = parseInt(req.params.id);
+  // cari posisi data
+  const index = fishPonds.findIndex((k) => k.id === id);
+
+  // bila id tidak ada -> 404
+  if (index === -1) {
+    return res.status(404).json({
+      status: 'error',
+      message: `Data dengan id ${id} tidak ditemukan`,
+      data: null,
+    });
+  }
+
+  // validasi seluruh field wajib -> 400 bila kosong
+  const error = validasiKolam(req.body);
+  if (error) {
+    return res.status(400).json({
+      status: 'error',
+      message: error,
+      data: null,
+    });
+  }
+
+  // ambil field dari body
+  const { kodeKolam, jenisIkan, jumlahBibit, luasM2, tanggalTebar } = req.body;
+
+  // ganti seluruh data (id tetap)
+  const diubah = {
+    id,
+    kodeKolam,
+    jenisIkan,
+    jumlahBibit,
+    luasM2,
+    tanggalTebar,
+  };
+  fishPonds[index] = diubah;
+
+  // berhasil -> 200 + data hasil perubahan
+  res.status(200).json({
+    status: 'success',
+    message: `Data kolam dengan id ${id} berhasil diubah`,
+    data: diubah,
+  });
+});
+
+// =====================================================================
+// 5. DELETE /fish-ponds/:id - hapus data
+// =====================================================================
+app.delete('/fish-ponds/:id', (req, res) => {
+  // ubah parameter id menjadi angka
+  const id = parseInt(req.params.id);
+  // cari posisi data
+  const index = fishPonds.findIndex((k) => k.id === id);
+
+  // bila id tidak ada -> 404
+  if (index === -1) {
+    return res.status(404).json({
+      status: 'error',
+      message: `Data dengan id ${id} tidak ditemukan`,
+      data: null,
+    });
+  }
+
+  // hapus data dari array
+  fishPonds.splice(index, 1);
+
+  // berhasil -> 200 + pesan menyebut id + data null
+  res.status(200).json({
+    status: 'success',
+    message: `Data kolam dengan id ${id} berhasil dihapus`,
+    data: null,
   });
 });
 
