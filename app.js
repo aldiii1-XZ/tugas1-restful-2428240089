@@ -258,6 +258,17 @@ app.delete('/fish-ponds/:id', (req, res) => {
 });
 
 // =====================================================================
+// Middleware catch-all 404 - route yang tidak terdaftar (JSON)
+// =====================================================================
+app.use((req, res) => {
+  res.status(404).json({
+    status: 'error',
+    message: 'Endpoint tidak ditemukan',
+    data: null,
+  });
+});
+
+// =====================================================================
 // Jalankan server hanya saat lokal (bukan di Vercel/serverless)
 // =====================================================================
 if (process.env.NODE_ENV !== 'production') {
