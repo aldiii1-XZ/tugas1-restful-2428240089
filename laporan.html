@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<title>Laporan Tugas 1</title>
+<style>
+  @page { size: A4; margin: 2.5cm 2.5cm 2.5cm 2.5cm; }
+  * { box-sizing: border-box; }
+  body { font-family: "Times New Roman", Times, serif; font-size: 12pt; line-height: 1.5; color: #000; margin: 0; }
+  h1 { font-size: 14pt; text-align: center; margin: 0 0 6pt; }
+  h2 { font-size: 12.5pt; margin: 16pt 0 6pt; border-bottom: 1px solid #000; padding-bottom: 3pt; }
+  h3 { font-size: 12pt; margin: 12pt 0 4pt; }
+  p { margin: 0 0 8pt; text-align: justify; }
+  ol, ul { margin: 0 0 8pt; padding-left: 20pt; }
+  li { margin-bottom: 4pt; text-align: justify; }
+  .sampul { text-align: center; padding-top: 90pt; }
+  .sampul .judul { font-size: 16pt; font-weight: bold; line-height: 1.4; margin-bottom: 10pt; }
+  .sampul .sub { font-size: 13pt; margin-bottom: 40pt; }
+  .sampul .ident { font-size: 12.5pt; line-height: 1.9; }
+  .sampul .inst { font-size: 13pt; font-weight: bold; margin-top: 46pt; }
+  .pagebreak { page-break-before: always; }
+  pre { font-family: Consolas, "Courier New", monospace; font-size: 9pt; line-height: 1.35; background: #f6f8fa; border: 1px solid #d0d7de; border-radius: 4px; padding: 7pt 9pt; white-space: pre-wrap; word-break: break-word; margin: 0 0 8pt; }
+  code { font-family: Consolas, "Courier New", monospace; font-size: 10.5pt; background: #f0f0f0; padding: 0 3px; }
+  table { border-collapse: collapse; width: 100%; font-size: 9.5pt; margin: 0 0 10pt; }
+  th, td { border: 1px solid #666; padding: 4pt 5pt; vertical-align: top; }
+  th { background: #e8e8e8; text-align: center; font-weight: bold; }
+  td.c { text-align: center; }
+  .gambar { width: 100%; border: 1px solid #999; margin: 6pt 0 4pt; }
+  .cap { font-size: 10pt; text-align: center; font-style: italic; color: #333; margin-bottom: 10pt; }
+  .tautan { font-family: Consolas, monospace; font-size: 10pt; word-break: break-all; }
+  .kotak { border: 1px solid #000; padding: 8pt 10pt; margin: 8pt 0; }
+</style>
+</head>
+<body>
+
+<!-- ============ HALAMAN SAMPUL ============ -->
+<div class="sampul">
+  <div class="judul">LAPORAN PRAKTIKUM TUGAS 1<br>RESTful API Murni dengan Express.js</div>
+  <div class="sub">Topik 23 — Perikanan: Kolam Ikan (Resource: /fish-ponds)</div>
+  <div class="ident">
+    <strong>Nama</strong> : Aldi Yonatan Rusnawan<br>
+    <strong>NIM</strong> : 2428240089<br>
+    <strong>Kelas</strong> : SI5B<br>
+    <strong>Nomor Topik</strong> : 23<br>
+    <strong>Nama Topik</strong> : Perikanan — Kolam Ikan
+  </div>
+  <div class="inst">
+    PROGRAM STUDI SISTEM INFORMASI<br>
+    UNIVERSITAS MDP
+  </div>
+</div>
+
+<!-- ============ TUJUAN ============ -->
+<div class="pagebreak"></div>
+<h2>1. Tujuan Praktikum</h2>
+<ol>
+  <li>Membuat project RESTful API berbasis <strong>Express.js</strong> yang dapat dijalankan secara lokal maupun di-deploy ke Vercel, serta tersimpan pada repository GitHub publik.</li>
+  <li>Membangun <strong>routing RESTful</strong> untuk resource <code>/fish-ponds</code> dengan konvensi URL yang benar (kata benda jamak, tanpa kata kerja), memakai route parameter <code>:id</code> dan filter <em>query string</em>.</li>
+  <li>Menerapkan <strong>method HTTP</strong> (GET, POST, PUT, DELETE) sesuai fungsinya, lengkap dengan validasi field wajib, pembuatan id otomatis, serta penanganan kasus 400 dan 404.</li>
+  <li>Menghasilkan <strong>response JSON murni</strong> dengan struktur dan status code yang tepat (200, 201, 400, 404) tanpa menggunakan <code>res.send()</code> teks/HTML.</li>
+</ol>
+
+<!-- ============ DASAR TEORI ============ -->
+<h2>2. Dasar Teori</h2>
+<h3>2.1 REST dan Resource</h3>
+<p><em>Representational State Transfer</em> (REST) adalah gaya arsitektur layanan web yang memandang seluruh entitas sebagai <strong>resource</strong> (sumber daya), misalnya kolam ikan. Setiap resource diidentifikasi oleh sebuah URL, dan interaksi dilakukan melalui method HTTP. Pada REST, URL sebaiknya hanya memuat <strong>kata benda</strong> (bukan kata kerja), karena aksi dinyatakan oleh method HTTP. Konvensi penamaan yang umum dipakai adalah kata benda jamak berhuruf kecil, misalnya <code>/fish-ponds</code>.</p>
+
+<h3>2.2 Method HTTP</h3>
+<p>Empat method utama yang digunakan pada operasi CRUD (<em>Create, Read, Update, Delete</em>) adalah sebagai berikut.</p>
+<ul>
+  <li><strong>GET</strong> — membaca data tanpa mengubahnya. Dipakai untuk mengambil seluruh data maupun satu data tertentu.</li>
+  <li><strong>POST</strong> — menambah data baru ke dalam koleksi.</li>
+  <li><strong>PUT</strong> — mengganti seluruh data pada sebuah resource dengan id tertentu (penggantian penuh).</li>
+  <li><strong>DELETE</strong> — menghapus data dengan id tertentu.</li>
+</ul>
+
+<h3>2.3 HTTP Status Code</h3>
+<p>Status code menyatakan hasil pemrosesan permintaan oleh server. Status yang dipakai pada tugas ini meliputi: <strong>200</strong> (OK) untuk keberhasilan GET/PUT/DELETE; <strong>201</strong> (Created) untuk keberhasilan POST; <strong>400</strong> (Bad Request) bila validasi field wajib gagal; dan <strong>404</strong> (Not Found) bila data atau endpoint tidak ditemukan.</p>
+
+<h3>2.4 Format JSON</h3>
+<p><em>JavaScript Object Notation</em> (JSON) adalah format pertukaran data yang ringan dan mudah dibaca. Pada API ini, response GET mengembalikan data secara langsung (objek untuk satu data, array untuk banyak data), sedangkan response POST, PUT, DELETE, dan error memakai struktur <code>{ "status", "message", "data" }</code>.</p>
+
+<h3>2.5 Express.js</h3>
+<p>Express.js adalah <em>framework</em> web minimalis untuk Node.js yang menyediakan mekanisme routing dan middleware. Middleware <code>express.json()</code> berfungsi membaca body request berformat JSON ke dalam <code>req.body</code>. Data pada tugas ini disimpan dalam <strong>array di memori</strong> (tanpa database), sehingga bersifat sementara — hal ini wajar pada lingkungan <em>serverless</em> seperti Vercel.</p>
+
+<p style="font-size:10.5pt;"><strong>Sumber:</strong> Fielding, R. T. (2000). <em>Architectural Styles and the Design of Network-based Software Architectures</em>. University of California, Irvine. — MDN Web Docs, <em>HTTP request methods</em> &amp; <em>HTTP response status codes</em>. — Dokumentasi resmi Express.js (expressjs.com).</p>
+
+<!-- ============ ALAT DAN BAHAN ============ -->
+<h2>3. Alat dan Bahan</h2>
+<table>
+  <tr><th style="width:30%">Komponen</th><th>Keterangan</th></tr>
+  <tr><td>Node.js</td><td>v26.9.0 (LTS)</td></tr>
+  <tr><td>npm</td><td>11.19.1</td></tr>
+  <tr><td>Express.js</td><td>v4.22.3 (dependency)</td></tr>
+  <tr><td>nodemon</td><td>v3.1.9 (devDependency)</td></tr>
+  <tr><td>Editor kode</td><td>Visual Studio Code</td></tr>
+  <tr><td>Tool uji API</td><td>curl (baris perintah) dan browser</td></tr>
+  <tr><td>Akun GitHub</td><td>aldiii1-XZ (repository publik)</td></tr>
+  <tr><td>Akun Vercel</td><td>aldiii1-xz (deploy serverless)</td></tr>
+</table>
+
+<!-- ============ LANGKAH PRAKTIKUM ============ -->
+<div class="pagebreak"></div>
+<h2>4. Langkah Praktikum</h2>
+
+<h3>4.1 Inisialisasi Project</h3>
+<p>Project dibuat dengan <code>npm init -y</code>, kemudian memasang Express sebagai dependency dan nodemon sebagai devDependency. Entry point diatur ke <code>app.js</code> beserta script <code>start</code> dan <code>dev</code>.</p>
+<pre>npm init -y
+npm install express
+npm install --save-dev nodemon</pre>
+<p>Isi <code>package.json</code> (bagian utama):</p>
+<pre>{
+  "name": "tugas1-restful-2428240089",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js"
+  },
+  "dependencies": { "express": "^4.21.2" },
+  "devDependencies": { "nodemon": "^3.1.9" }
+}</pre>
+
+<h3>4.2 Struktur Project</h3>
+<pre>tugas1-restful-2428240089/
+├── .gitignore        # mengabaikan node_modules/ dan .env
+├── vercel.json       # konfigurasi deploy Vercel
+├── package.json
+├── app.js            # seluruh kode API
+└── README.md         # identitas, link, cara menjalankan, daftar endpoint</pre>
+
+<h3>4.3 Data Awal dan Middleware</h3>
+<p>Data awal diletakkan pada array <code>fishPonds</code> berisi 3 data, dengan variabel <code>nextId</code> sebagai penanda id berikutnya. Middleware <code>express.json()</code> dipasang untuk membaca body JSON.</p>
+<pre>const express = require('express');
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+app.use(express.json());
+
+let fishPonds = [
+  { id: 1, kodeKolam: 'K-01', jenisIkan: 'lele', jumlahBibit: 3000, luasM2: 24, tanggalTebar: '2026-08-15' },
+  { id: 2, kodeKolam: 'K-02', jenisIkan: 'nila', jumlahBibit: 2500, luasM2: 30, tanggalTebar: '2026-08-20' },
+  { id: 3, kodeKolam: 'K-03', jenisIkan: 'lele', jumlahBibit: 4000, luasM2: 36, tanggalTebar: '2026-09-01' },
+];
+
+let nextId = 4;</pre>
+
+<h3>4.4 Route GET / (Info API)</h3>
+<p>Route awal membalas JSON berisi identitas dan daftar endpoint (bukan teks/HTML).</p>
+<pre>app.get('/', (req, res) =&gt; {
+  res.json({
+    nama: 'Aldi Yonatan Rusnawan',
+    nim: '2428240089',
+    topik: '23 - Perikanan: Kolam Ikan',
+    resource: '/fish-ponds',
+    endpoints: [
+      'GET    /fish-ponds',
+      'GET    /fish-ponds/:id',
+      'GET    /fish-ponds?jenisIkan=lele',
+      'POST   /fish-ponds',
+      'PUT    /fish-ponds/:id',
+      'DELETE /fish-ponds/:id',
+    ],
+  });
+});</pre>
+
+<h3>4.5 Route GET Semua Data dan Filter</h3>
+<p>Bila terdapat query string <code>?jenisIkan=</code>, data disaring dengan <code>req.query</code> dan hasilnya berupa array (boleh kosong).</p>
+<pre>// GET /fish-ponds  dan  GET /fish-ponds?jenisIkan=lele
+app.get('/fish-ponds', (req, res) =&gt; {
+  const { jenisIkan } = req.query;
+
+  if (jenisIkan) {
+    const hasil = fishPonds.filter(
+      (k) =&gt; k.jenisIkan.toLowerCase() === jenisIkan.toLowerCase()
+    );
+    return res.json(hasil);
+  }
+
+  res.json(fishPonds);
+});</pre>
+
+<h3>4.6 Route GET Satu Data</h3>
+<p>Route parameter hanya dipakai untuk <code>:id</code>. Bila id tidak ditemukan, server membalas status 404 berformat JSON.</p>
+<pre>// GET /fish-ponds/:id
+app.get('/fish-ponds/:id', (req, res) =&gt; {
+  const id = parseInt(req.params.id);
+  const kolam = fishPonds.find((k) =&gt; k.id === id);
+
+  if (!kolam) {
+    return res.status(404).json({
+      status: 'error',
+      message: `Data dengan id ${id} tidak ditemukan`,
+      data: null,
+    });
+  }
+
+  res.json(kolam);
+});</pre>
+
+<h3>4.7 Validasi Field Wajib</h3>
+<p>Seluruh field wajib divalidasi melalui fungsi bantu <code>validasiKolam()</code>, dipakai bersama oleh POST dan PUT.</p>
+<pre>function validasiKolam(body) {
+  const { kodeKolam, jenisIkan, jumlahBibit, luasM2, tanggalTebar } = body;
+
+  if (!kodeKolam) return 'Field kodeKolam wajib diisi';
+  if (!jenisIkan) return 'Field jenisIkan wajib diisi';
+  if (jumlahBibit === undefined || jumlahBibit === null || jumlahBibit === '')
+    return 'Field jumlahBibit wajib diisi';
+  if (luasM2 === undefined || luasM2 === null || luasM2 === '')
+    return 'Field luasM2 wajib diisi';
+  if (!tanggalTebar) return 'Field tanggalTebar wajib diisi';
+
+  if (typeof jumlahBibit !== 'number') return 'Field jumlahBibit harus berupa angka';
+  if (typeof luasM2 !== 'number') return 'Field luasM2 harus berupa angka';
+
+  return null;
+}</pre>
+
+<h3>4.8 Route POST (Tambah Data)</h3>
+<p>Id dibuat otomatis oleh server (tidak dikirim di body). Bila validasi gagal → 400; bila berhasil → 201 beserta data yang baru dibuat.</p>
+<pre>// POST /fish-ponds
+app.post('/fish-ponds', (req, res) =&gt; {
+  const error = validasiKolam(req.body);
+  if (error) {
+    return res.status(400).json({ status: 'error', message: error, data: null });
+  }
+
+  const { kodeKolam, jenisIkan, jumlahBibit, luasM2, tanggalTebar } = req.body;
+  const baru = { id: nextId++, kodeKolam, jenisIkan, jumlahBibit, luasM2, tanggalTebar };
+  fishPonds.push(baru);
+
+  res.status(201).json({
+    status: 'success',
+    message: 'Data berhasil ditambahkan',
+    data: baru,
+  });
+});</pre>
+
+<h3>4.9 Route PUT (Ubah Seluruh Data)</h3>
+<p>PUT melakukan penggantian penuh. Bila id tidak ada → 404; bila field wajib kosong → 400.</p>
+<pre>// PUT /fish-ponds/:id
+app.put('/fish-ponds/:id', (req, res) =&gt; {
+  const id = parseInt(req.params.id);
+  const index = fishPonds.findIndex((k) =&gt; k.id === id);
+
+  if (index === -1) {
+    return res.status(404).json({
+      status: 'error', message: `Data dengan id ${id} tidak ditemukan`, data: null,
+    });
+  }
+
+  const error = validasiKolam(req.body);
+  if (error) {
+    return res.status(400).json({ status: 'error', message: error, data: null });
+  }
+
+  const { kodeKolam, jenisIkan, jumlahBibit, luasM2, tanggalTebar } = req.body;
+  const diubah = { id, kodeKolam, jenisIkan, jumlahBibit, luasM2, tanggalTebar };
+  fishPonds[index] = diubah;
+
+  res.status(200).json({
+    status: 'success',
+    message: `Data kolam dengan id ${id} berhasil diubah`,
+    data: diubah,
+  });
+});</pre>
+
+<h3>4.10 Route DELETE (Hapus Data)</h3>
+<p>DELETE mengembalikan status 200 dengan <code>data: null</code> dan pesan yang menyebut id yang dihapus.</p>
+<pre>// DELETE /fish-ponds/:id
+app.delete('/fish-ponds/:id', (req, res) =&gt; {
+  const id = parseInt(req.params.id);
+  const index = fishPonds.findIndex((k) =&gt; k.id === id);
+
+  if (index === -1) {
+    return res.status(404).json({
+      status: 'error', message: `Data dengan id ${id} tidak ditemukan`, data: null,
+    });
+  }
+
+  fishPonds.splice(index, 1);
+
+  res.status(200).json({
+    status: 'success',
+    message: `Data kolam dengan id ${id} berhasil dihapus`,
+    data: null,
+  });
+});</pre>
+
+<h3>4.11 Middleware 404 dan Konfigurasi Vercel</h3>
+<p>Route yang tidak terdaftar ditangani middleware <em>catch-all</em> di akhir file. Agar dapat berjalan di Vercel (serverless), <code>app.listen()</code> hanya dijalankan saat lokal dan <code>app</code> diekspor.</p>
+<pre>// catch-all 404
+app.use((req, res) =&gt; {
+  res.status(404).json({
+    status: 'error', message: 'Endpoint tidak ditemukan', data: null,
+  });
+});
+
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(PORT, () =&gt; {
+    console.log(`Server berjalan di http://localhost:${PORT}`);
+  });
+}
+
+module.exports = app;</pre>
+<p>Berkas <code>vercel.json</code>:</p>
+<pre>{
+  "version": 2,
+  "builds": [{ "src": "app.js", "use": "@vercel/node" }],
+  "routes": [{ "src": "/(.*)", "dest": "app.js" }]
+}</pre>
+
+<h3>4.12 Push ke GitHub dan Deploy ke Vercel</h3>
+<p>Project diinisialisasi dengan Git, lalu dibuat commit bertahap (7 commit). Repository publik dibuat dan di-push, kemudian project di-deploy ke Vercel.</p>
+<pre>git init
+git add .
+git commit -m "init project express"
+...
+git remote add origin https://github.com/aldiii1-XZ/tugas1-restful-2428240089.git
+git push -u origin main
+
+# deploy
+vercel --prod</pre>
+<p>URL hasil deploy: <span class="tautan">https://tugas1-restful-2428240089.vercel.app</span></p>
+
+<!-- ============ HASIL PENGUJIAN ============ -->
+<div class="pagebreak"></div>
+<h2>5. Hasil Pengujian</h2>
+<p>Seluruh endpoint diuji pada URL Vercel. Tabel berikut merangkum hasilnya.</p>
+<table>
+  <tr><th style="width:4%">No</th><th style="width:9%">Method</th><th style="width:24%">Endpoint</th><th style="width:24%">Data request</th><th style="width:8%">Status diharapkan</th><th style="width:8%">Status hasil</th><th>Keterangan</th></tr>
+  <tr><td class="c">1</td><td class="c">GET</td><td>/fish-ponds</td><td>—</td><td class="c">200</td><td class="c">200</td><td>Sesuai</td></tr>
+  <tr><td class="c">2</td><td class="c">GET</td><td>/fish-ponds/1</td><td>—</td><td class="c">200</td><td class="c">200</td><td>Sesuai</td></tr>
+  <tr><td class="c">3</td><td class="c">GET</td><td>/fish-ponds/99</td><td>—</td><td class="c">404</td><td class="c">404</td><td>Sesuai</td></tr>
+  <tr><td class="c">4</td><td class="c">GET</td><td>/fish-ponds?jenisIkan=lele</td><td>—</td><td class="c">200</td><td class="c">200</td><td>Sesuai</td></tr>
+  <tr><td class="c">5</td><td class="c">POST</td><td>/fish-ponds</td><td>body lengkap</td><td class="c">201</td><td class="c">201</td><td>Sesuai</td></tr>
+  <tr><td class="c">6</td><td class="c">POST</td><td>/fish-ponds</td><td>field wajib kosong</td><td class="c">400</td><td class="c">400</td><td>Sesuai</td></tr>
+  <tr><td class="c">7</td><td class="c">PUT</td><td>/fish-ponds/1</td><td>body lengkap</td><td class="c">200</td><td class="c">200</td><td>Sesuai</td></tr>
+  <tr><td class="c">8</td><td class="c">PUT</td><td>/fish-ponds/99</td><td>body lengkap</td><td class="c">404</td><td class="c">404</td><td>Sesuai</td></tr>
+  <tr><td class="c">9</td><td class="c">DELETE</td><td>/fish-ponds/2</td><td>—</td><td class="c">200</td><td class="c">200</td><td>Sesuai</td></tr>
+  <tr><td class="c">10</td><td class="c">DELETE</td><td>/fish-ponds/99</td><td>—</td><td class="c">404</td><td class="c">404</td><td>Sesuai</td></tr>
+  <tr><td class="c">11</td><td class="c">GET</td><td>/endpoint-ngawur</td><td>—</td><td class="c">404</td><td class="c">404</td><td>Sesuai (catch-all)</td></tr>
+  <tr><td class="c">12</td><td class="c">GET</td><td>/</td><td>—</td><td class="c">200</td><td class="c">200</td><td>Sesuai (info API)</td></tr>
+</table>
+<p>Keseluruhan <strong>12 skenario lulus</strong> (100%), termasuk dua skenario gagal wajib: <strong>404</strong> (data tidak ditemukan) dan <strong>400</strong> (validasi field wajib).</p>
+
+<p><strong>Screenshot request dan response</strong> (diuji pada URL Vercel):</p>
+<img class="gambar" src="bukti-pengujian.png" alt="Bukti pengujian endpoint">
+<div class="cap">Gambar 5.1 — Bukti pengujian 12 endpoint pada URL Vercel</div>
+
+<!-- ============ PEMBAHASAN ============ -->
+<div class="pagebreak"></div>
+<h2>6. Pembahasan</h2>
+
+<h3>6.1 Alasan Pemilihan Method dan Status Code</h3>
+<p>Setiap method dipilih sesuai fungsinya agar memenuhi prinsip REST. <strong>GET</strong> dipakai untuk membaca data karena tidak mengubah keadaan server. <strong>POST</strong> dipakai untuk menambah data karena menghasilkan resource baru, sehingga status yang tepat adalah <strong>201 Created</strong>. <strong>PUT</strong> dipakai untuk mengganti seluruh field data pada id tertentu; karena operasinya mengubah data yang sudah ada, status yang dipakai adalah <strong>200 OK</strong>. <strong>DELETE</strong> menghapus data dan mengembalikan <strong>200 OK</strong> beserta pesan yang menyebut id yang dihapus.</p>
+<p>Status <strong>400 Bad Request</strong> diberikan ketika body request tidak lolos validasi field wajib, sedangkan <strong>404 Not Found</strong> diberikan ketika data dengan id tertentu tidak ada atau ketika endpoint yang diakses tidak terdaftar. Pemisahan ini penting agar pengguna API dapat membedakan kesalahan pada data yang dikirim (400) dengan kesalahan pada alamat/id yang dituju (404).</p>
+
+<h3>6.2 Kendala dan Cara Mengatasinya</h3>
+<ol>
+  <li><strong>Perbedaan format response dengan latihan.</strong> Pada latihan, GET membalas data langsung dan DELETE memakai <code>res.status(204).send()</code>. Pada tugas ini DELETE harus membalas JSON 200 dengan <code>data: null</code>, dan route awal harus JSON. Kendala ini diatasi dengan menyusun ulang handler agar memakai <code>res.json()</code> pada seluruh response.</li>
+  <li><strong>Validasi yang dipakai bersama POST dan PUT.</strong> Agar tidak menulis kode validasi dua kali, dibuat fungsi bantu <code>validasiKolam()</code> yang mengembalikan pesan error atau <code>null</code>. Dengan cara ini konsistensi validasi terjaga.</li>
+  <li><strong>Server harus berjalan lokal sekaligus di Vercel.</strong> Menjalankan <code>app.listen()</code> tanpa syarat dapat mengganggu lingkungan serverless. Kendala diatasi dengan memanggil <code>app.listen()</code> hanya bila <code>NODE_ENV !== 'production'</code>, lalu mengekspor <code>app</code> untuk Vercel.</li>
+  <li><strong>Data kembali ke nilai awal di Vercel.</strong> Karena data disimpan di memori dan Vercel bersifat serverless, array dapat ter-reset setelah beberapa waktu. Sesuai catatan tugas, hal ini wajar dan tidak mengurangi nilai — yang penting setiap request menghasilkan response yang benar.</li>
+</ol>
+
+<!-- ============ KESIMPULAN ============ -->
+<h2>7. Kesimpulan</h2>
+<ol>
+  <li>RESTful API untuk resource <code>/fish-ponds</code> berhasil dibangun dengan Express.js, dapat dijalankan secara lokal maupun di Vercel, serta tersimpan pada repository GitHub publik dengan 7 commit bertahap.</li>
+  <li>Seluruh routing RESTful (6 endpoint: GET semua, GET satu, filter query string, POST, PUT, DELETE) berjalan sesuai konvensi — memakai kata benda jamak tanpa kata kerja, dengan route parameter hanya untuk <code>:id</code> dan filter memakai <em>query string</em>.</li>
+  <li>Penggunaan method HTTP telah sesuai fungsinya: GET hanya membaca, POST menambah dengan id otomatis, PUT mengganti seluruh data, dan DELETE menghapus data. Validasi field wajib serta penanganan kasus 400 dan 404 berjalan dengan benar.</li>
+  <li>Seluruh response telah berformat JSON murni dengan status code yang tepat (200, 201, 400, 404), tanpa memakai <code>res.send()</code> teks/HTML. Dari 12 skenario pengujian, seluruhnya (100%) dinyatakan lulus.</li>
+</ol>
+
+<!-- ============ LAMPIRAN ============ -->
+<h2>8. Lampiran</h2>
+<p><strong>A. Link Repository GitHub:</strong><br>
+<span class="tautan">https://github.com/aldiii1-XZ/tugas1-restful-2428240089</span></p>
+<p><strong>B. Link Deploy Vercel:</strong><br>
+<span class="tautan">https://tugas1-restful-2428240089.vercel.app</span></p>
+<p><strong>C. Screenshot Riwayat Commit (<code>git log --oneline</code>):</strong></p>
+<img class="gambar" src="bukti-gitlog.png" alt="Riwayat commit">
+<div class="cap">Gambar 8.1 — Riwayat commit bertahap (7 commit)</div>
+
+</body>
+</html>

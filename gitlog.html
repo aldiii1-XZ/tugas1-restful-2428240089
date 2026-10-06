@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="id">
+<head><meta charset="utf-8"><title>Riwayat Commit</title>
+<style>
+  body { margin:0; padding:16px 20px; background:#0c0c0c; font-family: Consolas, "Courier New", monospace; width: 880px; }
+  .bar { display:flex; gap:7px; margin-bottom:12px; }
+  .dot { width:11px; height:11px; border-radius:50%; }
+  .judul { color:#9ca3af; font-size:12.5px; margin-bottom:10px; }
+  pre { color:#e5e7eb; font-size:13px; margin:0; line-height:1.6; white-space:pre; }
+  .hash { color:#fbbf24; } .msg { color:#e5e7eb; } .dim { color:#6b7280; }
+</style></head>
+<body>
+<div class="bar"><div class="dot" style="background:#ff5f56"></div><div class="dot" style="background:#ffbd2e"></div><div class="dot" style="background:#27c93f"></div></div>
+<div class="judul">$ git log --oneline &nbsp;·&nbsp; C:\Users\aldiy\OneDrive\Dokumen\GitHub\tugas1-restful-2428240089</div>
+<pre id="out"></pre>
+<script>
+const log = [
+ ["8d6f153","tambah README dan skrip uji endpoint lokal"],
+ ["6c6ded5","tambah package-lock.json"],
+ ["fae1719","tambah middleware 404 dan konfigurasi deploy Vercel"],
+ ["a0956c7","tambah route PUT dan DELETE"],
+ ["10c855d","tambah route GET satu data dan POST dengan validasi field wajib"],
+ ["c44f216","tambah data awal dan route GET semua beserta filter"],
+ ["07928f9","init project express"],
+];
+document.getElementById('out').innerHTML = log.map(([h,m]) => `<span class="hash">${h}</span> <span class="msg">${m}</span>`).join("\n");
+document.title='siap';
+</script>
+</body></html>

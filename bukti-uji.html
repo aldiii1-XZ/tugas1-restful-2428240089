@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<title>Bukti Pengujian Endpoint</title>
+<style>
+  * { box-sizing: border-box; }
+  body { font-family: "Times New Roman", Times, serif; margin: 0; padding: 18px 22px; background: #fff; color: #111; width: 940px; }
+  h1 { font-size: 17px; margin: 0 0 2px; }
+  .sub { font-size: 12.5px; color: #333; margin-bottom: 4px; }
+  .url { font-family: Consolas, monospace; font-size: 12px; color: #0b5; word-break: break-all; margin-bottom: 12px; }
+  .kartu { border: 1px solid #ccc; border-radius: 6px; margin-bottom: 9px; overflow: hidden; page-break-inside: avoid; }
+  .baris { display: flex; align-items: center; gap: 9px; padding: 6px 10px; background: #f4f6f8; border-bottom: 1px solid #e2e6ea; }
+  .no { font-size: 12px; color: #666; min-width: 20px; }
+  .m { font-family: Consolas, monospace; font-size: 11.5px; font-weight: bold; color: #fff; padding: 2px 7px; border-radius: 4px; min-width: 52px; text-align: center; }
+  .GET { background: #16a34a; } .POST { background: #2563eb; } .PUT { background: #d97706; } .DELETE { background: #dc2626; }
+  .path { font-family: Consolas, monospace; font-size: 12px; flex: 1; }
+  .sc { font-family: Consolas, monospace; font-size: 11.5px; font-weight: bold; color: #fff; padding: 2px 8px; border-radius: 10px; }
+  .ok { background: #16a34a; } .bad { background: #dc2626; }
+  .isi { padding: 7px 10px; }
+  .label { font-size: 10.5px; text-transform: uppercase; letter-spacing: .5px; color: #888; margin-bottom: 2px; }
+  pre { font-family: Consolas, monospace; font-size: 11.5px; margin: 0 0 6px; white-space: pre-wrap; word-break: break-all; line-height: 1.35; }
+  pre.req { color: #1d4ed8; }
+  pre.res { color: #111; }
+  pre.res.err { color: #b91c1c; }
+  .ket { font-size: 11.5px; color: #444; font-style: italic; }
+</style>
+</head>
+<body>
+<h1>Bukti Pengujian Endpoint — Tugas 1 RESTful API (Express.js)</h1>
+<div class="sub">Aldi Yonatan Rusnawan · NIM 2428240089 · SI5B · Topik 23: Perikanan — Kolam Ikan</div>
+<div class="url">Diuji pada URL Vercel: https://tugas1-restful-2428240089.vercel.app</div>
+<div id="wadah"></div>
+<script>
+const U = "https://tugas1-restful-2428240089.vercel.app";
+const tes = [
+  { no:1, m:"GET", p:"/fish-ponds", ket:"Ambil semua data", sc:200, req:null,
+    res:'[{"id":1,"kodeKolam":"K-01","jenisIkan":"lele","jumlahBibit":3000,"luasM2":24,"tanggalTebar":"2026-08-15"},{"id":2,"kodeKolam":"K-02","jenisIkan":"nila","jumlahBibit":2500,"luasM2":30,"tanggalTebar":"2026-08-20"},{"id":3,"kodeKolam":"K-03","jenisIkan":"lele","jumlahBibit":4000,"luasM2":36,"tanggalTebar":"2026-09-01"}]' },
+  { no:2, m:"GET", p:"/fish-ponds/1", ket:"Ambil satu data", sc:200, req:null,
+    res:'{"id":1,"kodeKolam":"K-01","jenisIkan":"lele","jumlahBibit":3000,"luasM2":24,"tanggalTebar":"2026-08-15"}' },
+  { no:3, m:"GET", p:"/fish-ponds/99", ket:"Data tidak ditemukan", sc:404, req:null,
+    res:'{"status":"error","message":"Data dengan id 99 tidak ditemukan","data":null}' },
+  { no:4, m:"GET", p:"/fish-ponds?jenisIkan=lele", ket:"Filter dengan query string", sc:200, req:null,
+    res:'[{"id":1,"kodeKolam":"K-01","jenisIkan":"lele","jumlahBibit":3000,"luasM2":24,"tanggalTebar":"2026-08-15"},{"id":3,"kodeKolam":"K-03","jenisIkan":"lele","jumlahBibit":4000,"luasM2":36,"tanggalTebar":"2026-09-01"}]' },
+  { no:5, m:"POST", p:"/fish-ponds", ket:"Tambah data baru (body lengkap)", sc:201,
+    req:'{"kodeKolam":"K-04","jenisIkan":"nila","jumlahBibit":2000,"luasM2":20,"tanggalTebar":"2026-09-10"}',
+    res:'{"status":"success","message":"Data berhasil ditambahkan","data":{"id":4,"kodeKolam":"K-04","jenisIkan":"nila","jumlahBibit":2000,"luasM2":20,"tanggalTebar":"2026-09-10"}}' },
+  { no:6, m:"POST", p:"/fish-ponds", ket:"Validasi gagal — field wajib kosong", sc:400,
+    req:'{"kodeKolam":"","jenisIkan":"lele"}',
+    res:'{"status":"error","message":"Field kodeKolam wajib diisi","data":null}' },
+  { no:7, m:"PUT", p:"/fish-ponds/1", ket:"Ubah seluruh data", sc:200,
+    req:'{"kodeKolam":"K-01","jenisIkan":"mujair","jumlahBibit":1500,"luasM2":18,"tanggalTebar":"2026-07-01"}',
+    res:'{"status":"success","message":"Data kolam dengan id 1 berhasil diubah","data":{"id":1,"kodeKolam":"K-01","jenisIkan":"mujair","jumlahBibit":1500,"luasM2":18,"tanggalTebar":"2026-07-01"}}' },
+  { no:8, m:"PUT", p:"/fish-ponds/99", ket:"Id tidak ditemukan", sc:404,
+    req:'{"kodeKolam":"K-99","jenisIkan":"lele","jumlahBibit":100,"luasM2":10,"tanggalTebar":"2026-01-01"}',
+    res:'{"status":"error","message":"Data dengan id 99 tidak ditemukan","data":null}' },
+  { no:9, m:"DELETE", p:"/fish-ponds/2", ket:"Hapus data", sc:200, req:null,
+    res:'{"status":"success","message":"Data kolam dengan id 2 berhasil dihapus","data":null}' },
+  { no:10, m:"DELETE", p:"/fish-ponds/99", ket:"Id tidak ditemukan", sc:404, req:null,
+    res:'{"status":"error","message":"Data dengan id 99 tidak ditemukan","data":null}' },
+  { no:11, m:"GET", p:"/endpoint-ngawur", ket:"Route tidak terdaftar (catch-all)", sc:404, req:null,
+    res:'{"status":"error","message":"Endpoint tidak ditemukan","data":null}' },
+  { no:12, m:"GET", p:"/", ket:"Info API", sc:200, req:null,
+    res:'{"nama":"Aldi Yonatan Rusnawan","nim":"2428240089","topik":"23 - Perikanan: Kolam Ikan","resource":"/fish-ponds","endpoints":["GET    /fish-ponds","GET    /fish-ponds/:id","GET    /fish-ponds?jenisIkan=lele","POST   /fish-ponds","PUT    /fish-ponds/:id","DELETE /fish-ponds/:id"]}' },
+];
+const w = document.getElementById('wadah');
+for (const t of tes) {
+  const d = document.createElement('div');
+  d.className = 'kartu';
+  const okCls = (t.sc === 200 || t.sc === 201) ? 'ok' : 'bad';
+  d.innerHTML = `<div class="baris"><span class="no">${t.no}.</span><span class="m ${t.m}">${t.m}</span><span class="path">${t.p}</span><span class="sc ${okCls}">${t.sc}</span></div>
+  <div class="isi">
+    ${t.req ? `<div class="label">Request Body</div><pre class="req">${t.req}</pre>` : ''}
+    <div class="label">Response</div><pre class="res ${okCls==='bad'?'err':''}">${t.res}</pre>
+    <div class="ket">${t.ket}</div>
+  </div>`;
+  w.appendChild(d);
+}
+document.title = 'siap';
+</script>
+</body>
+</html>
