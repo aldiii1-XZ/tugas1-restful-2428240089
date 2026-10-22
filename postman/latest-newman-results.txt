@@ -1,0 +1,66 @@
+newman
+
+Tugas 2 - Postman Automation - RESTful API Kolam Ikan
+
+□ 01 - Skenario CRUD
+└ GET Semua Data Kolam
+  GET http://localhost:3001/fish-ponds [200 OK, 556B, 22ms]
+  √  Status 200
+  √  Response array
+  √  Data awal minimal tiga
+
+└ GET Kolam by ID
+  GET http://localhost:3001/fish-ponds/2 [200 OK, 341B, 2ms]
+  √  Status 200
+  √  Field sesuai skema
+
+└ GET Filter Jenis Ikan Lele
+  GET http://localhost:3001/fish-ponds?jenisIkan=lele [200 OK, 449B, 3ms]
+  √  Status 200
+  √  Semua data hasil filter lele
+
+└ POST Tambah Kolam
+  POST http://localhost:3001/fish-ponds [201 Created, 412B, 118ms]
+  √  Status 201
+  √  Response sukses dan data benar
+
+└ PUT Ubah Kolam
+  PUT http://localhost:3001/fish-ponds/4 [200 OK, 420B, 3ms]
+  √  Status 200
+  √  Data terubah dan ID tetap
+
+└ DELETE Kolam
+  DELETE http://localhost:3001/fish-ponds/4 [200 OK, 319B, 1ms]
+  √  Status 200
+  √  Data terhapus
+
+□ 02 - Skenario Negatif
+└ POST Validasi Field Wajib (Negatif)
+  POST http://localhost:3001/fish-ponds [400 Bad Request, 314B, 1ms]
+  √  Status 400
+  √  Error JSON konsisten
+
+└ GET Kolam Tidak Ada (Negatif)
+  GET http://localhost:3001/fish-ponds/999999 [404 Not Found, 322B, 2ms]
+  √  Status 404
+  √  Error JSON konsisten
+
+┌─────────────────────────┬───────────────────┬──────────────────┐
+│                         │          executed │           failed │
+├─────────────────────────┼───────────────────┼──────────────────┤
+│              iterations │                 1 │                0 │
+├─────────────────────────┼───────────────────┼──────────────────┤
+│                requests │                 8 │                0 │
+├─────────────────────────┼───────────────────┼──────────────────┤
+│            test-scripts │                 8 │                0 │
+├─────────────────────────┼───────────────────┼──────────────────┤
+│      prerequest-scripts │                 0 │                0 │
+├─────────────────────────┼───────────────────┼──────────────────┤
+│              assertions │                17 │                0 │
+├─────────────────────────┴───────────────────┴──────────────────┤
+│ total run duration: 461ms                                      │
+├────────────────────────────────────────────────────────────────┤
+│ total data received: 1.23kB (approx)                           │
+├────────────────────────────────────────────────────────────────┤
+│ average response time: 19ms [min: 1ms, max: 118ms, s.d.: 37ms] │
+└────────────────────────────────────────────────────────────────┘

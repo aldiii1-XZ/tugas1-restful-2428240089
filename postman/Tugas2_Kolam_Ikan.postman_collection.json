@@ -1,0 +1,351 @@
+{
+  "info": {
+    "name": "Tugas 2 - Postman Automation - RESTful API Kolam Ikan",
+    "_postman_id": "d4a2f4e0-2026-10-15-2428240089",
+    "description": "Koleksi pengujian otomatis berdasarkan API Tugas 1. Resource /fish-ponds.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:3000"
+    },
+    {
+      "key": "id",
+      "value": "1"
+    },
+    {
+      "key": "createdId",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "01 - Skenario CRUD",
+      "item": [
+        {
+          "name": "GET Semua Data Kolam",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/fish-ponds",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "fish-ponds"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200',()=>pm.expect(pm.response.code).to.eql(200));",
+                  "pm.test('Response array',()=>pm.expect(pm.response.json()).to.be.an('array'));",
+                  "pm.test('Data awal minimal tiga',()=>pm.expect(pm.response.json().length).to.be.at.least(3));"
+                ],
+                "packages": {}
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET Kolam by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/fish-ponds/2",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "fish-ponds",
+                "2"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200',()=>pm.expect(pm.response.code).to.eql(200));",
+                  "const d=pm.response.json();",
+                  "pm.test('Field sesuai skema',()=>{pm.expect(d).to.have.all.keys('id','kodeKolam','jenisIkan','jumlahBibit','luasM2','tanggalTebar');});"
+                ],
+                "packages": {}
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET Filter Jenis Ikan Lele",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/fish-ponds",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "fish-ponds"
+              ],
+              "query": [
+                {
+                  "key": "jenisIkan",
+                  "value": "lele"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200',()=>pm.expect(pm.response.code).to.eql(200));",
+                  "pm.test('Semua data hasil filter lele',()=>pm.response.json().forEach(d=>pm.expect(d.jenisIkan.toLowerCase()).to.eql('lele')));"
+                ],
+                "packages": {}
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST Tambah Kolam",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/fish-ponds",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "fish-ponds"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"kodeKolam\": \"K-04\",\n  \"jenisIkan\": \"lele\",\n  \"jumlahBibit\": 3000,\n  \"luasM2\": 24,\n  \"tanggalTebar\": \"2026-10-15\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 201',()=>pm.expect(pm.response.code).to.eql(201));",
+                  "const r=pm.response.json();",
+                  "pm.test('Response sukses dan data benar',()=>{pm.expect(r.status).to.eql('success'); pm.expect(r.data.kodeKolam).to.eql('K-04'); pm.expect(r.data.id).to.be.a('number');});",
+                  "pm.environment.set('createdId',r.data.id);"
+                ],
+                "packages": {}
+              }
+            }
+          ]
+        },
+        {
+          "name": "PUT Ubah Kolam",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/fish-ponds/{{createdId}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "fish-ponds",
+                "{{createdId}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"kodeKolam\": \"K-01\",\n  \"jenisIkan\": \"nila\",\n  \"jumlahBibit\": 2800,\n  \"luasM2\": 24,\n  \"tanggalTebar\": \"2026-10-01\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200',()=>pm.expect(pm.response.code).to.eql(200));",
+                  "const r=pm.response.json();",
+                  "pm.test('Data terubah dan ID tetap',()=>{pm.expect(r.status).to.eql('success'); pm.expect(r.data.id).to.eql(Number(pm.environment.get('createdId'))); pm.expect(r.data.jenisIkan).to.eql('nila');});"
+                ],
+                "packages": {}
+              }
+            }
+          ]
+        },
+        {
+          "name": "DELETE Kolam",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/fish-ponds/{{createdId}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "fish-ponds",
+                "{{createdId}}"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200',()=>pm.expect(pm.response.code).to.eql(200));",
+                  "const r=pm.response.json();",
+                  "pm.test('Data terhapus',()=>{pm.expect(r.status).to.eql('success'); pm.expect(r.data).to.be.null;});"
+                ],
+                "packages": {}
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "02 - Skenario Negatif",
+      "item": [
+        {
+          "name": "POST Validasi Field Wajib (Negatif)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/fish-ponds",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "fish-ponds"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"jenisIkan\": \"lele\",\n  \"jumlahBibit\": 1000,\n  \"luasM2\": 12,\n  \"tanggalTebar\": \"2026-10-15\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 400',()=>pm.expect(pm.response.code).to.eql(400));",
+                  "const r=pm.response.json();",
+                  "pm.test('Error JSON konsisten',()=>{pm.expect(r.status).to.eql('error'); pm.expect(r.message).to.include('kodeKolam'); pm.expect(r.data).to.be.null;});"
+                ],
+                "packages": {}
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET Kolam Tidak Ada (Negatif)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/fish-ponds/999999",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "fish-ponds",
+                "999999"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 404',()=>pm.expect(pm.response.code).to.eql(404));",
+                  "const r=pm.response.json();",
+                  "pm.test('Error JSON konsisten',()=>{pm.expect(r.status).to.eql('error'); pm.expect(r.data).to.be.null;});"
+                ],
+                "packages": {}
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

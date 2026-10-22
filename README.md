@@ -111,3 +111,15 @@ Server berjalan di `http://localhost:3000`.
 - Express.js 4
 - nodemon (dev)
 - Vercel (deploy serverless)
+
+## Automated API testing (Tugas 2)
+
+Postman Collection untuk menguji API di `app.js` ada di [`postman/Tugas2_Kolam_Ikan.postman_collection.json`](postman/Tugas2_Kolam_Ikan.postman_collection.json). Environment development ada di [`postman/Development.postman_environment.json`](postman/Development.postman_environment.json).
+
+Collection mencakup GET seluruh kolam, GET berdasarkan ID, filter `jenisIkan`, POST berhasil, validasi POST gagal, PUT, DELETE, dan GET ID tidak ditemukan. Setiap request memiliki assertion status serta isi/struktur respons. Jalankan API dengan `npm start`, impor kedua berkas JSON ke Postman, pilih environment Tugas 2 - Development, lalu jalankan Collection Runner. Data di server hanya ada di memori; restart server untuk memulihkan data awal.
+
+Jalankan otomatis via Newman dengan `node run-postman-tests.js` atau klik `run-postman-tests.cmd` di Windows. Skrip pemeriksaan JSON lokal: `node verify-postman.js`.
+
+Environment bawaan memakai `base_url = http://localhost:3001`. Ubah nilainya bila server berjalan di port lain (misalnya `3000`).
+
+Laporan Tugas 2 (PDF): [`Laporan_Tugas2_Postman_Automation_FINAL.pdf`](Laporan_Tugas2_Postman_Automation_FINAL.pdf) — versi DOCX: [`Laporan_Tugas2_Postman_Automation_FINAL.docx`](Laporan_Tugas2_Postman_Automation_FINAL.docx). Hasil run terakhir: `postman/latest-newman-results.json` (8 request, 17 assertion, 0 gagal).

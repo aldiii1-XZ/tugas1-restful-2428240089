@@ -1,0 +1,3108 @@
+{
+  "collection": {
+    "_": {
+      "postman_id": "d4a2f4e0-2026-10-15-2428240089"
+    },
+    "item": [
+      {
+        "id": "d6eedf9f-de14-4722-a70f-ae3bbc4a2320",
+        "name": "01 - Skenario CRUD",
+        "item": [
+          {
+            "id": "c6e3b871-2c6d-459b-a188-eba251f376ae",
+            "name": "GET Semua Data Kolam",
+            "request": {
+              "url": {
+                "path": [
+                  "fish-ponds"
+                ],
+                "host": [
+                  "{{base_url}}"
+                ],
+                "query": [],
+                "variable": []
+              },
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "method": "GET"
+            },
+            "response": [],
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "id": "83368058-845f-4ad6-be48-ec3f3f425e89",
+                  "type": "text/javascript",
+                  "packages": {},
+                  "exec": [
+                    "pm.test('Status 200',()=>pm.expect(pm.response.code).to.eql(200));",
+                    "pm.test('Response array',()=>pm.expect(pm.response.json()).to.be.an('array'));",
+                    "pm.test('Data awal minimal tiga',()=>pm.expect(pm.response.json().length).to.be.at.least(3));"
+                  ],
+                  "_lastExecutionId": "3cc3ffba-7de9-445a-a997-07e7adf20e94"
+                }
+              }
+            ]
+          },
+          {
+            "id": "988660d0-fb06-42ea-9d1a-87f83e72d738",
+            "name": "GET Kolam by ID",
+            "request": {
+              "url": {
+                "path": [
+                  "fish-ponds",
+                  "2"
+                ],
+                "host": [
+                  "{{base_url}}"
+                ],
+                "query": [],
+                "variable": []
+              },
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "method": "GET"
+            },
+            "response": [],
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "id": "592b2bee-fc89-43c3-b283-4f995db9313d",
+                  "type": "text/javascript",
+                  "packages": {},
+                  "exec": [
+                    "pm.test('Status 200',()=>pm.expect(pm.response.code).to.eql(200));",
+                    "const d=pm.response.json();",
+                    "pm.test('Field sesuai skema',()=>{pm.expect(d).to.have.all.keys('id','kodeKolam','jenisIkan','jumlahBibit','luasM2','tanggalTebar');});"
+                  ],
+                  "_lastExecutionId": "99eec732-1575-4fc9-841c-e78eda69c53b"
+                }
+              }
+            ]
+          },
+          {
+            "id": "2e30c3a8-60ee-429d-ad6b-4165f64fe22a",
+            "name": "GET Filter Jenis Ikan Lele",
+            "request": {
+              "url": {
+                "path": [
+                  "fish-ponds"
+                ],
+                "host": [
+                  "{{base_url}}"
+                ],
+                "query": [
+                  {
+                    "key": "jenisIkan",
+                    "value": "lele"
+                  }
+                ],
+                "variable": []
+              },
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "method": "GET"
+            },
+            "response": [],
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "id": "2e39637c-a56d-427d-a2a3-5a0540ace9a3",
+                  "type": "text/javascript",
+                  "packages": {},
+                  "exec": [
+                    "pm.test('Status 200',()=>pm.expect(pm.response.code).to.eql(200));",
+                    "pm.test('Semua data hasil filter lele',()=>pm.response.json().forEach(d=>pm.expect(d.jenisIkan.toLowerCase()).to.eql('lele')));"
+                  ],
+                  "_lastExecutionId": "7d038041-7e36-4c74-8687-2ae7748f5532"
+                }
+              }
+            ]
+          },
+          {
+            "id": "5b0a4950-97af-4e83-b419-b7b05fce2407",
+            "name": "POST Tambah Kolam",
+            "request": {
+              "url": {
+                "path": [
+                  "fish-ponds"
+                ],
+                "host": [
+                  "{{base_url}}"
+                ],
+                "query": [],
+                "variable": []
+              },
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "method": "POST",
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"kodeKolam\": \"K-04\",\n  \"jenisIkan\": \"lele\",\n  \"jumlahBibit\": 3000,\n  \"luasM2\": 24,\n  \"tanggalTebar\": \"2026-10-15\"\n}",
+                "options": {
+                  "raw": {
+                    "language": "json"
+                  }
+                }
+              }
+            },
+            "response": [],
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "id": "c09094a5-9795-4574-8ea7-6133dd39fc00",
+                  "type": "text/javascript",
+                  "packages": {},
+                  "exec": [
+                    "pm.test('Status 201',()=>pm.expect(pm.response.code).to.eql(201));",
+                    "const r=pm.response.json();",
+                    "pm.test('Response sukses dan data benar',()=>{pm.expect(r.status).to.eql('success'); pm.expect(r.data.kodeKolam).to.eql('K-04'); pm.expect(r.data.id).to.be.a('number');});",
+                    "pm.environment.set('createdId',r.data.id);"
+                  ],
+                  "_lastExecutionId": "7de50ed5-6de2-42d3-be39-0165b5043287"
+                }
+              }
+            ]
+          },
+          {
+            "id": "0e27da11-7ffe-4097-a11c-c3ba5104d122",
+            "name": "PUT Ubah Kolam",
+            "request": {
+              "url": {
+                "path": [
+                  "fish-ponds",
+                  "{{createdId}}"
+                ],
+                "host": [
+                  "{{base_url}}"
+                ],
+                "query": [],
+                "variable": []
+              },
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "method": "PUT",
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"kodeKolam\": \"K-01\",\n  \"jenisIkan\": \"nila\",\n  \"jumlahBibit\": 2800,\n  \"luasM2\": 24,\n  \"tanggalTebar\": \"2026-10-01\"\n}",
+                "options": {
+                  "raw": {
+                    "language": "json"
+                  }
+                }
+              }
+            },
+            "response": [],
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "id": "d17f33ad-c11b-4f32-a272-745cf81ceb92",
+                  "type": "text/javascript",
+                  "packages": {},
+                  "exec": [
+                    "pm.test('Status 200',()=>pm.expect(pm.response.code).to.eql(200));",
+                    "const r=pm.response.json();",
+                    "pm.test('Data terubah dan ID tetap',()=>{pm.expect(r.status).to.eql('success'); pm.expect(r.data.id).to.eql(Number(pm.environment.get('createdId'))); pm.expect(r.data.jenisIkan).to.eql('nila');});"
+                  ],
+                  "_lastExecutionId": "b7e24c33-392c-4105-862e-b38b1f994073"
+                }
+              }
+            ]
+          },
+          {
+            "id": "e4378c2f-292e-4050-bff3-5bd2a9156ec5",
+            "name": "DELETE Kolam",
+            "request": {
+              "url": {
+                "path": [
+                  "fish-ponds",
+                  "{{createdId}}"
+                ],
+                "host": [
+                  "{{base_url}}"
+                ],
+                "query": [],
+                "variable": []
+              },
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "method": "DELETE"
+            },
+            "response": [],
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "id": "793c1364-69ad-40cf-9108-7b6ed732b438",
+                  "type": "text/javascript",
+                  "packages": {},
+                  "exec": [
+                    "pm.test('Status 200',()=>pm.expect(pm.response.code).to.eql(200));",
+                    "const r=pm.response.json();",
+                    "pm.test('Data terhapus',()=>{pm.expect(r.status).to.eql('success'); pm.expect(r.data).to.be.null;});"
+                  ],
+                  "_lastExecutionId": "d392fb26-9a6b-4b59-acf2-c7e5d29d175c"
+                }
+              }
+            ]
+          }
+        ],
+        "event": []
+      },
+      {
+        "id": "0da08625-7dc9-4108-a76c-3c4892d32f86",
+        "name": "02 - Skenario Negatif",
+        "item": [
+          {
+            "id": "7c24980a-8aa5-4532-97b2-9c3323355a8d",
+            "name": "POST Validasi Field Wajib (Negatif)",
+            "request": {
+              "url": {
+                "path": [
+                  "fish-ponds"
+                ],
+                "host": [
+                  "{{base_url}}"
+                ],
+                "query": [],
+                "variable": []
+              },
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "method": "POST",
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"jenisIkan\": \"lele\",\n  \"jumlahBibit\": 1000,\n  \"luasM2\": 12,\n  \"tanggalTebar\": \"2026-10-15\"\n}",
+                "options": {
+                  "raw": {
+                    "language": "json"
+                  }
+                }
+              }
+            },
+            "response": [],
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "id": "f81df115-902b-4e0c-8431-2abc81f28978",
+                  "type": "text/javascript",
+                  "packages": {},
+                  "exec": [
+                    "pm.test('Status 400',()=>pm.expect(pm.response.code).to.eql(400));",
+                    "const r=pm.response.json();",
+                    "pm.test('Error JSON konsisten',()=>{pm.expect(r.status).to.eql('error'); pm.expect(r.message).to.include('kodeKolam'); pm.expect(r.data).to.be.null;});"
+                  ],
+                  "_lastExecutionId": "92727a03-6b09-4ca4-be0b-8e20ffa294f3"
+                }
+              }
+            ]
+          },
+          {
+            "id": "4a2573e4-653c-4d84-9a96-8ecbcfbaaea5",
+            "name": "GET Kolam Tidak Ada (Negatif)",
+            "request": {
+              "url": {
+                "path": [
+                  "fish-ponds",
+                  "999999"
+                ],
+                "host": [
+                  "{{base_url}}"
+                ],
+                "query": [],
+                "variable": []
+              },
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "method": "GET"
+            },
+            "response": [],
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "id": "e9961937-6526-49be-bb91-a7aec9eea8d5",
+                  "type": "text/javascript",
+                  "packages": {},
+                  "exec": [
+                    "pm.test('Status 404',()=>pm.expect(pm.response.code).to.eql(404));",
+                    "const r=pm.response.json();",
+                    "pm.test('Error JSON konsisten',()=>{pm.expect(r.status).to.eql('error'); pm.expect(r.data).to.be.null;});"
+                  ],
+                  "_lastExecutionId": "ef57a562-fc8c-4aca-8524-cb60f531666a"
+                }
+              }
+            ]
+          }
+        ],
+        "event": []
+      }
+    ],
+    "event": [],
+    "variable": [
+      {
+        "type": "any",
+        "value": "http://localhost:3000",
+        "key": "base_url"
+      },
+      {
+        "type": "any",
+        "value": "1",
+        "key": "id"
+      },
+      {
+        "type": "any",
+        "value": "",
+        "key": "createdId"
+      }
+    ],
+    "info": {
+      "_postman_id": "d4a2f4e0-2026-10-15-2428240089",
+      "name": "Tugas 2 - Postman Automation - RESTful API Kolam Ikan",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+      "description": {
+        "content": "Koleksi pengujian otomatis berdasarkan API Tugas 1. Resource /fish-ponds.",
+        "type": "text/plain"
+      }
+    }
+  },
+  "environment": {
+    "_": {
+      "postman_variable_scope": "environment",
+      "postman_exported_using": "Hermes"
+    },
+    "id": "d4a2f4e0-2026-10-15-env-2428240089",
+    "name": "Tugas 2 - Development",
+    "values": [
+      {
+        "type": "any",
+        "value": "http://localhost:3001",
+        "key": "base_url"
+      },
+      {
+        "type": "any",
+        "value": "1",
+        "key": "id"
+      },
+      {
+        "type": "any",
+        "value": 4,
+        "key": "createdId"
+      }
+    ]
+  },
+  "globals": {
+    "id": "462124a0-6bf9-44b1-9a51-99547000e642",
+    "values": []
+  },
+  "run": {
+    "stats": {
+      "iterations": {
+        "total": 1,
+        "pending": 0,
+        "failed": 0
+      },
+      "items": {
+        "total": 8,
+        "pending": 0,
+        "failed": 0
+      },
+      "scripts": {
+        "total": 8,
+        "pending": 0,
+        "failed": 0
+      },
+      "prerequests": {
+        "total": 8,
+        "pending": 0,
+        "failed": 0
+      },
+      "requests": {
+        "total": 8,
+        "pending": 0,
+        "failed": 0
+      },
+      "tests": {
+        "total": 8,
+        "pending": 0,
+        "failed": 0
+      },
+      "assertions": {
+        "total": 17,
+        "pending": 0,
+        "failed": 0
+      },
+      "testScripts": {
+        "total": 8,
+        "pending": 0,
+        "failed": 0
+      },
+      "prerequestScripts": {
+        "total": 0,
+        "pending": 0,
+        "failed": 0
+      }
+    },
+    "timings": {
+      "responseAverage": 19,
+      "responseMin": 1,
+      "responseMax": 118,
+      "responseSd": 37.993420483025744,
+      "dnsAverage": 0,
+      "dnsMin": 0,
+      "dnsMax": 0,
+      "dnsSd": 0,
+      "firstByteAverage": 0,
+      "firstByteMin": 0,
+      "firstByteMax": 0,
+      "firstByteSd": 0,
+      "started": 1792639123553,
+      "completed": 1792639124014
+    },
+    "executions": [
+      {
+        "cursor": {
+          "position": 0,
+          "iteration": 0,
+          "length": 8,
+          "cycles": 1,
+          "empty": false,
+          "eof": false,
+          "bof": true,
+          "cr": false,
+          "ref": "195915be-ab56-4a4e-ab8c-742beec8592a",
+          "httpRequestId": "cde4e162-c1ba-40e1-b15d-aea5774b96a9"
+        },
+        "item": {
+          "id": "c6e3b871-2c6d-459b-a188-eba251f376ae",
+          "name": "GET Semua Data Kolam",
+          "request": {
+            "url": {
+              "path": [
+                "fish-ponds"
+              ],
+              "host": [
+                "{{base_url}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "83368058-845f-4ad6-be48-ec3f3f425e89",
+                "type": "text/javascript",
+                "packages": {},
+                "exec": [
+                  "pm.test('Status 200',()=>pm.expect(pm.response.code).to.eql(200));",
+                  "pm.test('Response array',()=>pm.expect(pm.response.json()).to.be.an('array'));",
+                  "pm.test('Data awal minimal tiga',()=>pm.expect(pm.response.json().length).to.be.at.least(3));"
+                ],
+                "_lastExecutionId": "3cc3ffba-7de9-445a-a997-07e7adf20e94"
+              }
+            }
+          ]
+        },
+        "request": {
+          "url": {
+            "protocol": "http",
+            "port": "3001",
+            "path": [
+              "fish-ponds"
+            ],
+            "host": [
+              "localhost"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "5f438bd4-ec5f-48cf-bc2d-3d4a26916642",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "localhost:3001",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            }
+          ],
+          "method": "GET"
+        },
+        "response": {
+          "id": "2ebebdea-3c8b-4fcb-a96c-09ccd4c4ed61",
+          "status": "OK",
+          "code": 200,
+          "header": [
+            {
+              "key": "X-Powered-By",
+              "value": "Express"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json; charset=utf-8"
+            },
+            {
+              "key": "Content-Length",
+              "value": "319"
+            },
+            {
+              "key": "ETag",
+              "value": "W/\"13f-TcbJ3NQHeVsh8AehFJE6LNx+98g\""
+            },
+            {
+              "key": "Date",
+              "value": "Thu, 22 Oct 2026 03:18:43 GMT"
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "key": "Keep-Alive",
+              "value": "timeout=5"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              91,
+              123,
+              34,
+              105,
+              100,
+              34,
+              58,
+              49,
+              44,
+              34,
+              107,
+              111,
+              100,
+              101,
+              75,
+              111,
+              108,
+              97,
+              109,
+              34,
+              58,
+              34,
+              75,
+              45,
+              48,
+              49,
+              34,
+              44,
+              34,
+              106,
+              101,
+              110,
+              105,
+              115,
+              73,
+              107,
+              97,
+              110,
+              34,
+              58,
+              34,
+              108,
+              101,
+              108,
+              101,
+              34,
+              44,
+              34,
+              106,
+              117,
+              109,
+              108,
+              97,
+              104,
+              66,
+              105,
+              98,
+              105,
+              116,
+              34,
+              58,
+              51,
+              48,
+              48,
+              48,
+              44,
+              34,
+              108,
+              117,
+              97,
+              115,
+              77,
+              50,
+              34,
+              58,
+              50,
+              52,
+              44,
+              34,
+              116,
+              97,
+              110,
+              103,
+              103,
+              97,
+              108,
+              84,
+              101,
+              98,
+              97,
+              114,
+              34,
+              58,
+              34,
+              50,
+              48,
+              50,
+              54,
+              45,
+              48,
+              56,
+              45,
+              49,
+              53,
+              34,
+              125,
+              44,
+              123,
+              34,
+              105,
+              100,
+              34,
+              58,
+              50,
+              44,
+              34,
+              107,
+              111,
+              100,
+              101,
+              75,
+              111,
+              108,
+              97,
+              109,
+              34,
+              58,
+              34,
+              75,
+              45,
+              48,
+              50,
+              34,
+              44,
+              34,
+              106,
+              101,
+              110,
+              105,
+              115,
+              73,
+              107,
+              97,
+              110,
+              34,
+              58,
+              34,
+              110,
+              105,
+              108,
+              97,
+              34,
+              44,
+              34,
+              106,
+              117,
+              109,
+              108,
+              97,
+              104,
+              66,
+              105,
+              98,
+              105,
+              116,
+              34,
+              58,
+              50,
+              53,
+              48,
+              48,
+              44,
+              34,
+              108,
+              117,
+              97,
+              115,
+              77,
+              50,
+              34,
+              58,
+              51,
+              48,
+              44,
+              34,
+              116,
+              97,
+              110,
+              103,
+              103,
+              97,
+              108,
+              84,
+              101,
+              98,
+              97,
+              114,
+              34,
+              58,
+              34,
+              50,
+              48,
+              50,
+              54,
+              45,
+              48,
+              56,
+              45,
+              50,
+              48,
+              34,
+              125,
+              44,
+              123,
+              34,
+              105,
+              100,
+              34,
+              58,
+              51,
+              44,
+              34,
+              107,
+              111,
+              100,
+              101,
+              75,
+              111,
+              108,
+              97,
+              109,
+              34,
+              58,
+              34,
+              75,
+              45,
+              48,
+              51,
+              34,
+              44,
+              34,
+              106,
+              101,
+              110,
+              105,
+              115,
+              73,
+              107,
+              97,
+              110,
+              34,
+              58,
+              34,
+              108,
+              101,
+              108,
+              101,
+              34,
+              44,
+              34,
+              106,
+              117,
+              109,
+              108,
+              97,
+              104,
+              66,
+              105,
+              98,
+              105,
+              116,
+              34,
+              58,
+              52,
+              48,
+              48,
+              48,
+              44,
+              34,
+              108,
+              117,
+              97,
+              115,
+              77,
+              50,
+              34,
+              58,
+              51,
+              54,
+              44,
+              34,
+              116,
+              97,
+              110,
+              103,
+              103,
+              97,
+              108,
+              84,
+              101,
+              98,
+              97,
+              114,
+              34,
+              58,
+              34,
+              50,
+              48,
+              50,
+              54,
+              45,
+              48,
+              57,
+              45,
+              48,
+              49,
+              34,
+              125,
+              93
+            ]
+          },
+          "cookie": [],
+          "responseTime": 22,
+          "responseSize": 319
+        },
+        "id": "c6e3b871-2c6d-459b-a188-eba251f376ae",
+        "assertions": [
+          {
+            "assertion": "Status 200",
+            "skipped": false
+          },
+          {
+            "assertion": "Response array",
+            "skipped": false
+          },
+          {
+            "assertion": "Data awal minimal tiga",
+            "skipped": false
+          }
+        ]
+      },
+      {
+        "cursor": {
+          "ref": "2b7ac632-9a8e-4cd6-a631-fc5f6167a277",
+          "length": 8,
+          "cycles": 1,
+          "position": 1,
+          "iteration": 0,
+          "httpRequestId": "03df07c1-09d0-4ffb-8dbd-a05424a39df2"
+        },
+        "item": {
+          "id": "988660d0-fb06-42ea-9d1a-87f83e72d738",
+          "name": "GET Kolam by ID",
+          "request": {
+            "url": {
+              "path": [
+                "fish-ponds",
+                "2"
+              ],
+              "host": [
+                "{{base_url}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "592b2bee-fc89-43c3-b283-4f995db9313d",
+                "type": "text/javascript",
+                "packages": {},
+                "exec": [
+                  "pm.test('Status 200',()=>pm.expect(pm.response.code).to.eql(200));",
+                  "const d=pm.response.json();",
+                  "pm.test('Field sesuai skema',()=>{pm.expect(d).to.have.all.keys('id','kodeKolam','jenisIkan','jumlahBibit','luasM2','tanggalTebar');});"
+                ],
+                "_lastExecutionId": "99eec732-1575-4fc9-841c-e78eda69c53b"
+              }
+            }
+          ]
+        },
+        "request": {
+          "url": {
+            "protocol": "http",
+            "port": "3001",
+            "path": [
+              "fish-ponds",
+              "2"
+            ],
+            "host": [
+              "localhost"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "f9d9b1ea-26fc-4d76-af1c-e2a161d65699",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "localhost:3001",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            }
+          ],
+          "method": "GET"
+        },
+        "response": {
+          "id": "a35be7d3-5c58-420f-88a8-d65da37258db",
+          "status": "OK",
+          "code": 200,
+          "header": [
+            {
+              "key": "X-Powered-By",
+              "value": "Express"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json; charset=utf-8"
+            },
+            {
+              "key": "Content-Length",
+              "value": "105"
+            },
+            {
+              "key": "ETag",
+              "value": "W/\"69-S94DA5jfwlogxArwFgM/dUXWLF8\""
+            },
+            {
+              "key": "Date",
+              "value": "Thu, 22 Oct 2026 03:18:43 GMT"
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "key": "Keep-Alive",
+              "value": "timeout=5"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              123,
+              34,
+              105,
+              100,
+              34,
+              58,
+              50,
+              44,
+              34,
+              107,
+              111,
+              100,
+              101,
+              75,
+              111,
+              108,
+              97,
+              109,
+              34,
+              58,
+              34,
+              75,
+              45,
+              48,
+              50,
+              34,
+              44,
+              34,
+              106,
+              101,
+              110,
+              105,
+              115,
+              73,
+              107,
+              97,
+              110,
+              34,
+              58,
+              34,
+              110,
+              105,
+              108,
+              97,
+              34,
+              44,
+              34,
+              106,
+              117,
+              109,
+              108,
+              97,
+              104,
+              66,
+              105,
+              98,
+              105,
+              116,
+              34,
+              58,
+              50,
+              53,
+              48,
+              48,
+              44,
+              34,
+              108,
+              117,
+              97,
+              115,
+              77,
+              50,
+              34,
+              58,
+              51,
+              48,
+              44,
+              34,
+              116,
+              97,
+              110,
+              103,
+              103,
+              97,
+              108,
+              84,
+              101,
+              98,
+              97,
+              114,
+              34,
+              58,
+              34,
+              50,
+              48,
+              50,
+              54,
+              45,
+              48,
+              56,
+              45,
+              50,
+              48,
+              34,
+              125
+            ]
+          },
+          "cookie": [],
+          "responseTime": 2,
+          "responseSize": 105
+        },
+        "id": "988660d0-fb06-42ea-9d1a-87f83e72d738",
+        "assertions": [
+          {
+            "assertion": "Status 200",
+            "skipped": false
+          },
+          {
+            "assertion": "Field sesuai skema",
+            "skipped": false
+          }
+        ]
+      },
+      {
+        "cursor": {
+          "ref": "4f3cbcd9-79cc-4baf-90ae-b3fe708974e4",
+          "length": 8,
+          "cycles": 1,
+          "position": 2,
+          "iteration": 0,
+          "httpRequestId": "0d6b6bcc-f2a8-4196-b59a-57af9c669b79"
+        },
+        "item": {
+          "id": "2e30c3a8-60ee-429d-ad6b-4165f64fe22a",
+          "name": "GET Filter Jenis Ikan Lele",
+          "request": {
+            "url": {
+              "path": [
+                "fish-ponds"
+              ],
+              "host": [
+                "{{base_url}}"
+              ],
+              "query": [
+                {
+                  "key": "jenisIkan",
+                  "value": "lele"
+                }
+              ],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "2e39637c-a56d-427d-a2a3-5a0540ace9a3",
+                "type": "text/javascript",
+                "packages": {},
+                "exec": [
+                  "pm.test('Status 200',()=>pm.expect(pm.response.code).to.eql(200));",
+                  "pm.test('Semua data hasil filter lele',()=>pm.response.json().forEach(d=>pm.expect(d.jenisIkan.toLowerCase()).to.eql('lele')));"
+                ],
+                "_lastExecutionId": "7d038041-7e36-4c74-8687-2ae7748f5532"
+              }
+            }
+          ]
+        },
+        "request": {
+          "url": {
+            "protocol": "http",
+            "port": "3001",
+            "path": [
+              "fish-ponds"
+            ],
+            "host": [
+              "localhost"
+            ],
+            "query": [
+              {
+                "key": "jenisIkan",
+                "value": "lele"
+              }
+            ],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "16c8c780-a7fb-4ac2-b5a9-b508274dc659",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "localhost:3001",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            }
+          ],
+          "method": "GET"
+        },
+        "response": {
+          "id": "167d39b1-721e-418f-b2bc-1aa1def9b152",
+          "status": "OK",
+          "code": 200,
+          "header": [
+            {
+              "key": "X-Powered-By",
+              "value": "Express"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json; charset=utf-8"
+            },
+            {
+              "key": "Content-Length",
+              "value": "213"
+            },
+            {
+              "key": "ETag",
+              "value": "W/\"d5-sbHTuoJVUSZeXUWRIdNFdmBkG+c\""
+            },
+            {
+              "key": "Date",
+              "value": "Thu, 22 Oct 2026 03:18:43 GMT"
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "key": "Keep-Alive",
+              "value": "timeout=5"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              91,
+              123,
+              34,
+              105,
+              100,
+              34,
+              58,
+              49,
+              44,
+              34,
+              107,
+              111,
+              100,
+              101,
+              75,
+              111,
+              108,
+              97,
+              109,
+              34,
+              58,
+              34,
+              75,
+              45,
+              48,
+              49,
+              34,
+              44,
+              34,
+              106,
+              101,
+              110,
+              105,
+              115,
+              73,
+              107,
+              97,
+              110,
+              34,
+              58,
+              34,
+              108,
+              101,
+              108,
+              101,
+              34,
+              44,
+              34,
+              106,
+              117,
+              109,
+              108,
+              97,
+              104,
+              66,
+              105,
+              98,
+              105,
+              116,
+              34,
+              58,
+              51,
+              48,
+              48,
+              48,
+              44,
+              34,
+              108,
+              117,
+              97,
+              115,
+              77,
+              50,
+              34,
+              58,
+              50,
+              52,
+              44,
+              34,
+              116,
+              97,
+              110,
+              103,
+              103,
+              97,
+              108,
+              84,
+              101,
+              98,
+              97,
+              114,
+              34,
+              58,
+              34,
+              50,
+              48,
+              50,
+              54,
+              45,
+              48,
+              56,
+              45,
+              49,
+              53,
+              34,
+              125,
+              44,
+              123,
+              34,
+              105,
+              100,
+              34,
+              58,
+              51,
+              44,
+              34,
+              107,
+              111,
+              100,
+              101,
+              75,
+              111,
+              108,
+              97,
+              109,
+              34,
+              58,
+              34,
+              75,
+              45,
+              48,
+              51,
+              34,
+              44,
+              34,
+              106,
+              101,
+              110,
+              105,
+              115,
+              73,
+              107,
+              97,
+              110,
+              34,
+              58,
+              34,
+              108,
+              101,
+              108,
+              101,
+              34,
+              44,
+              34,
+              106,
+              117,
+              109,
+              108,
+              97,
+              104,
+              66,
+              105,
+              98,
+              105,
+              116,
+              34,
+              58,
+              52,
+              48,
+              48,
+              48,
+              44,
+              34,
+              108,
+              117,
+              97,
+              115,
+              77,
+              50,
+              34,
+              58,
+              51,
+              54,
+              44,
+              34,
+              116,
+              97,
+              110,
+              103,
+              103,
+              97,
+              108,
+              84,
+              101,
+              98,
+              97,
+              114,
+              34,
+              58,
+              34,
+              50,
+              48,
+              50,
+              54,
+              45,
+              48,
+              57,
+              45,
+              48,
+              49,
+              34,
+              125,
+              93
+            ]
+          },
+          "cookie": [],
+          "responseTime": 3,
+          "responseSize": 213
+        },
+        "id": "2e30c3a8-60ee-429d-ad6b-4165f64fe22a",
+        "assertions": [
+          {
+            "assertion": "Status 200",
+            "skipped": false
+          },
+          {
+            "assertion": "Semua data hasil filter lele",
+            "skipped": false
+          }
+        ]
+      },
+      {
+        "cursor": {
+          "ref": "e0d9fecf-3eae-4322-b8a7-f7978959b2fb",
+          "length": 8,
+          "cycles": 1,
+          "position": 3,
+          "iteration": 0,
+          "httpRequestId": "28fa750a-a8b0-4a3c-ad26-d58dd82d453b"
+        },
+        "item": {
+          "id": "5b0a4950-97af-4e83-b419-b7b05fce2407",
+          "name": "POST Tambah Kolam",
+          "request": {
+            "url": {
+              "path": [
+                "fish-ponds"
+              ],
+              "host": [
+                "{{base_url}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"kodeKolam\": \"K-04\",\n  \"jenisIkan\": \"lele\",\n  \"jumlahBibit\": 3000,\n  \"luasM2\": 24,\n  \"tanggalTebar\": \"2026-10-15\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "c09094a5-9795-4574-8ea7-6133dd39fc00",
+                "type": "text/javascript",
+                "packages": {},
+                "exec": [
+                  "pm.test('Status 201',()=>pm.expect(pm.response.code).to.eql(201));",
+                  "const r=pm.response.json();",
+                  "pm.test('Response sukses dan data benar',()=>{pm.expect(r.status).to.eql('success'); pm.expect(r.data.kodeKolam).to.eql('K-04'); pm.expect(r.data.id).to.be.a('number');});",
+                  "pm.environment.set('createdId',r.data.id);"
+                ],
+                "_lastExecutionId": "7de50ed5-6de2-42d3-be39-0165b5043287"
+              }
+            }
+          ]
+        },
+        "request": {
+          "url": {
+            "protocol": "http",
+            "port": "3001",
+            "path": [
+              "fish-ponds"
+            ],
+            "host": [
+              "localhost"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "f97ed4a8-55d1-4da9-b5e2-c2c3c0ad2ab4",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "localhost:3001",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            },
+            {
+              "key": "Content-Length",
+              "value": "119",
+              "system": true
+            }
+          ],
+          "method": "POST",
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"kodeKolam\": \"K-04\",\n  \"jenisIkan\": \"lele\",\n  \"jumlahBibit\": 3000,\n  \"luasM2\": 24,\n  \"tanggalTebar\": \"2026-10-15\"\n}",
+            "options": {
+              "raw": {
+                "language": "json"
+              }
+            }
+          }
+        },
+        "response": {
+          "id": "5f944035-2c59-4960-a978-e7445b609363",
+          "status": "Created",
+          "code": 201,
+          "header": [
+            {
+              "key": "X-Powered-By",
+              "value": "Express"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json; charset=utf-8"
+            },
+            {
+              "key": "Content-Length",
+              "value": "171"
+            },
+            {
+              "key": "ETag",
+              "value": "W/\"ab-gGfLWeHnSn13LZ1HJG39rOaY/FI\""
+            },
+            {
+              "key": "Date",
+              "value": "Thu, 22 Oct 2026 03:18:43 GMT"
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "key": "Keep-Alive",
+              "value": "timeout=5"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              123,
+              34,
+              115,
+              116,
+              97,
+              116,
+              117,
+              115,
+              34,
+              58,
+              34,
+              115,
+              117,
+              99,
+              99,
+              101,
+              115,
+              115,
+              34,
+              44,
+              34,
+              109,
+              101,
+              115,
+              115,
+              97,
+              103,
+              101,
+              34,
+              58,
+              34,
+              68,
+              97,
+              116,
+              97,
+              32,
+              98,
+              101,
+              114,
+              104,
+              97,
+              115,
+              105,
+              108,
+              32,
+              100,
+              105,
+              116,
+              97,
+              109,
+              98,
+              97,
+              104,
+              107,
+              97,
+              110,
+              34,
+              44,
+              34,
+              100,
+              97,
+              116,
+              97,
+              34,
+              58,
+              123,
+              34,
+              105,
+              100,
+              34,
+              58,
+              52,
+              44,
+              34,
+              107,
+              111,
+              100,
+              101,
+              75,
+              111,
+              108,
+              97,
+              109,
+              34,
+              58,
+              34,
+              75,
+              45,
+              48,
+              52,
+              34,
+              44,
+              34,
+              106,
+              101,
+              110,
+              105,
+              115,
+              73,
+              107,
+              97,
+              110,
+              34,
+              58,
+              34,
+              108,
+              101,
+              108,
+              101,
+              34,
+              44,
+              34,
+              106,
+              117,
+              109,
+              108,
+              97,
+              104,
+              66,
+              105,
+              98,
+              105,
+              116,
+              34,
+              58,
+              51,
+              48,
+              48,
+              48,
+              44,
+              34,
+              108,
+              117,
+              97,
+              115,
+              77,
+              50,
+              34,
+              58,
+              50,
+              52,
+              44,
+              34,
+              116,
+              97,
+              110,
+              103,
+              103,
+              97,
+              108,
+              84,
+              101,
+              98,
+              97,
+              114,
+              34,
+              58,
+              34,
+              50,
+              48,
+              50,
+              54,
+              45,
+              49,
+              48,
+              45,
+              49,
+              53,
+              34,
+              125,
+              125
+            ]
+          },
+          "cookie": [],
+          "responseTime": 118,
+          "responseSize": 171
+        },
+        "id": "5b0a4950-97af-4e83-b419-b7b05fce2407",
+        "assertions": [
+          {
+            "assertion": "Status 201",
+            "skipped": false
+          },
+          {
+            "assertion": "Response sukses dan data benar",
+            "skipped": false
+          }
+        ]
+      },
+      {
+        "cursor": {
+          "ref": "840d2206-107a-4bdd-8362-bb6f8ba997db",
+          "length": 8,
+          "cycles": 1,
+          "position": 4,
+          "iteration": 0,
+          "httpRequestId": "c7af186b-8d12-45fe-a15c-8a1a83c252ae"
+        },
+        "item": {
+          "id": "0e27da11-7ffe-4097-a11c-c3ba5104d122",
+          "name": "PUT Ubah Kolam",
+          "request": {
+            "url": {
+              "path": [
+                "fish-ponds",
+                "{{createdId}}"
+              ],
+              "host": [
+                "{{base_url}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "PUT",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"kodeKolam\": \"K-01\",\n  \"jenisIkan\": \"nila\",\n  \"jumlahBibit\": 2800,\n  \"luasM2\": 24,\n  \"tanggalTebar\": \"2026-10-01\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "d17f33ad-c11b-4f32-a272-745cf81ceb92",
+                "type": "text/javascript",
+                "packages": {},
+                "exec": [
+                  "pm.test('Status 200',()=>pm.expect(pm.response.code).to.eql(200));",
+                  "const r=pm.response.json();",
+                  "pm.test('Data terubah dan ID tetap',()=>{pm.expect(r.status).to.eql('success'); pm.expect(r.data.id).to.eql(Number(pm.environment.get('createdId'))); pm.expect(r.data.jenisIkan).to.eql('nila');});"
+                ],
+                "_lastExecutionId": "b7e24c33-392c-4105-862e-b38b1f994073"
+              }
+            }
+          ]
+        },
+        "request": {
+          "url": {
+            "protocol": "http",
+            "port": "3001",
+            "path": [
+              "fish-ponds",
+              "4"
+            ],
+            "host": [
+              "localhost"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "9d4bd2bc-575e-483f-b6ed-e121dc5637e8",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "localhost:3001",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            },
+            {
+              "key": "Content-Length",
+              "value": "119",
+              "system": true
+            }
+          ],
+          "method": "PUT",
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"kodeKolam\": \"K-01\",\n  \"jenisIkan\": \"nila\",\n  \"jumlahBibit\": 2800,\n  \"luasM2\": 24,\n  \"tanggalTebar\": \"2026-10-01\"\n}",
+            "options": {
+              "raw": {
+                "language": "json"
+              }
+            }
+          }
+        },
+        "response": {
+          "id": "f7763c1a-fc3c-499d-8f70-ac1bbb9b695d",
+          "status": "OK",
+          "code": 200,
+          "header": [
+            {
+              "key": "X-Powered-By",
+              "value": "Express"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json; charset=utf-8"
+            },
+            {
+              "key": "Content-Length",
+              "value": "184"
+            },
+            {
+              "key": "ETag",
+              "value": "W/\"b8-5T4Zdwn/nSUxXF/YBDiZ01RDQ7Y\""
+            },
+            {
+              "key": "Date",
+              "value": "Thu, 22 Oct 2026 03:18:43 GMT"
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "key": "Keep-Alive",
+              "value": "timeout=5"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              123,
+              34,
+              115,
+              116,
+              97,
+              116,
+              117,
+              115,
+              34,
+              58,
+              34,
+              115,
+              117,
+              99,
+              99,
+              101,
+              115,
+              115,
+              34,
+              44,
+              34,
+              109,
+              101,
+              115,
+              115,
+              97,
+              103,
+              101,
+              34,
+              58,
+              34,
+              68,
+              97,
+              116,
+              97,
+              32,
+              107,
+              111,
+              108,
+              97,
+              109,
+              32,
+              100,
+              101,
+              110,
+              103,
+              97,
+              110,
+              32,
+              105,
+              100,
+              32,
+              52,
+              32,
+              98,
+              101,
+              114,
+              104,
+              97,
+              115,
+              105,
+              108,
+              32,
+              100,
+              105,
+              117,
+              98,
+              97,
+              104,
+              34,
+              44,
+              34,
+              100,
+              97,
+              116,
+              97,
+              34,
+              58,
+              123,
+              34,
+              105,
+              100,
+              34,
+              58,
+              52,
+              44,
+              34,
+              107,
+              111,
+              100,
+              101,
+              75,
+              111,
+              108,
+              97,
+              109,
+              34,
+              58,
+              34,
+              75,
+              45,
+              48,
+              49,
+              34,
+              44,
+              34,
+              106,
+              101,
+              110,
+              105,
+              115,
+              73,
+              107,
+              97,
+              110,
+              34,
+              58,
+              34,
+              110,
+              105,
+              108,
+              97,
+              34,
+              44,
+              34,
+              106,
+              117,
+              109,
+              108,
+              97,
+              104,
+              66,
+              105,
+              98,
+              105,
+              116,
+              34,
+              58,
+              50,
+              56,
+              48,
+              48,
+              44,
+              34,
+              108,
+              117,
+              97,
+              115,
+              77,
+              50,
+              34,
+              58,
+              50,
+              52,
+              44,
+              34,
+              116,
+              97,
+              110,
+              103,
+              103,
+              97,
+              108,
+              84,
+              101,
+              98,
+              97,
+              114,
+              34,
+              58,
+              34,
+              50,
+              48,
+              50,
+              54,
+              45,
+              49,
+              48,
+              45,
+              48,
+              49,
+              34,
+              125,
+              125
+            ]
+          },
+          "cookie": [],
+          "responseTime": 3,
+          "responseSize": 184
+        },
+        "id": "0e27da11-7ffe-4097-a11c-c3ba5104d122",
+        "assertions": [
+          {
+            "assertion": "Status 200",
+            "skipped": false
+          },
+          {
+            "assertion": "Data terubah dan ID tetap",
+            "skipped": false
+          }
+        ]
+      },
+      {
+        "cursor": {
+          "ref": "883378a5-f836-4807-9a0d-5d54bea39d19",
+          "length": 8,
+          "cycles": 1,
+          "position": 5,
+          "iteration": 0,
+          "httpRequestId": "b54974c2-573b-45e2-9411-d531ea31d517"
+        },
+        "item": {
+          "id": "e4378c2f-292e-4050-bff3-5bd2a9156ec5",
+          "name": "DELETE Kolam",
+          "request": {
+            "url": {
+              "path": [
+                "fish-ponds",
+                "{{createdId}}"
+              ],
+              "host": [
+                "{{base_url}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "DELETE"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "793c1364-69ad-40cf-9108-7b6ed732b438",
+                "type": "text/javascript",
+                "packages": {},
+                "exec": [
+                  "pm.test('Status 200',()=>pm.expect(pm.response.code).to.eql(200));",
+                  "const r=pm.response.json();",
+                  "pm.test('Data terhapus',()=>{pm.expect(r.status).to.eql('success'); pm.expect(r.data).to.be.null;});"
+                ],
+                "_lastExecutionId": "d392fb26-9a6b-4b59-acf2-c7e5d29d175c"
+              }
+            }
+          ]
+        },
+        "request": {
+          "url": {
+            "protocol": "http",
+            "port": "3001",
+            "path": [
+              "fish-ponds",
+              "4"
+            ],
+            "host": [
+              "localhost"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "b67e1e3b-459e-4e4b-8474-d7eb7fe9acb4",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "localhost:3001",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            }
+          ],
+          "method": "DELETE"
+        },
+        "response": {
+          "id": "377159a4-a39e-4239-97dc-ad9145911135",
+          "status": "OK",
+          "code": 200,
+          "header": [
+            {
+              "key": "X-Powered-By",
+              "value": "Express"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json; charset=utf-8"
+            },
+            {
+              "key": "Content-Length",
+              "value": "84"
+            },
+            {
+              "key": "ETag",
+              "value": "W/\"54-KxyrxB62bksrlrp44DIehiLxNDg\""
+            },
+            {
+              "key": "Date",
+              "value": "Thu, 22 Oct 2026 03:18:43 GMT"
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "key": "Keep-Alive",
+              "value": "timeout=5"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              123,
+              34,
+              115,
+              116,
+              97,
+              116,
+              117,
+              115,
+              34,
+              58,
+              34,
+              115,
+              117,
+              99,
+              99,
+              101,
+              115,
+              115,
+              34,
+              44,
+              34,
+              109,
+              101,
+              115,
+              115,
+              97,
+              103,
+              101,
+              34,
+              58,
+              34,
+              68,
+              97,
+              116,
+              97,
+              32,
+              107,
+              111,
+              108,
+              97,
+              109,
+              32,
+              100,
+              101,
+              110,
+              103,
+              97,
+              110,
+              32,
+              105,
+              100,
+              32,
+              52,
+              32,
+              98,
+              101,
+              114,
+              104,
+              97,
+              115,
+              105,
+              108,
+              32,
+              100,
+              105,
+              104,
+              97,
+              112,
+              117,
+              115,
+              34,
+              44,
+              34,
+              100,
+              97,
+              116,
+              97,
+              34,
+              58,
+              110,
+              117,
+              108,
+              108,
+              125
+            ]
+          },
+          "cookie": [],
+          "responseTime": 1,
+          "responseSize": 84
+        },
+        "id": "e4378c2f-292e-4050-bff3-5bd2a9156ec5",
+        "assertions": [
+          {
+            "assertion": "Status 200",
+            "skipped": false
+          },
+          {
+            "assertion": "Data terhapus",
+            "skipped": false
+          }
+        ]
+      },
+      {
+        "cursor": {
+          "ref": "dc0dfc22-f976-43a0-af2c-1a8f616cb285",
+          "length": 8,
+          "cycles": 1,
+          "position": 6,
+          "iteration": 0,
+          "httpRequestId": "840bf8ac-a380-4fc7-ae92-6a35c68694c2"
+        },
+        "item": {
+          "id": "7c24980a-8aa5-4532-97b2-9c3323355a8d",
+          "name": "POST Validasi Field Wajib (Negatif)",
+          "request": {
+            "url": {
+              "path": [
+                "fish-ponds"
+              ],
+              "host": [
+                "{{base_url}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"jenisIkan\": \"lele\",\n  \"jumlahBibit\": 1000,\n  \"luasM2\": 12,\n  \"tanggalTebar\": \"2026-10-15\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "f81df115-902b-4e0c-8431-2abc81f28978",
+                "type": "text/javascript",
+                "packages": {},
+                "exec": [
+                  "pm.test('Status 400',()=>pm.expect(pm.response.code).to.eql(400));",
+                  "const r=pm.response.json();",
+                  "pm.test('Error JSON konsisten',()=>{pm.expect(r.status).to.eql('error'); pm.expect(r.message).to.include('kodeKolam'); pm.expect(r.data).to.be.null;});"
+                ],
+                "_lastExecutionId": "92727a03-6b09-4ca4-be0b-8e20ffa294f3"
+              }
+            }
+          ]
+        },
+        "request": {
+          "url": {
+            "protocol": "http",
+            "port": "3001",
+            "path": [
+              "fish-ponds"
+            ],
+            "host": [
+              "localhost"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "cd3f3f07-a7e9-4800-ab0c-e5ba23d02b8c",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "localhost:3001",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            },
+            {
+              "key": "Content-Length",
+              "value": "96",
+              "system": true
+            }
+          ],
+          "method": "POST",
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"jenisIkan\": \"lele\",\n  \"jumlahBibit\": 1000,\n  \"luasM2\": 12,\n  \"tanggalTebar\": \"2026-10-15\"\n}",
+            "options": {
+              "raw": {
+                "language": "json"
+              }
+            }
+          }
+        },
+        "response": {
+          "id": "0f10a37b-6645-4ccf-8c1b-06b3e7c30037",
+          "status": "Bad Request",
+          "code": 400,
+          "header": [
+            {
+              "key": "X-Powered-By",
+              "value": "Express"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json; charset=utf-8"
+            },
+            {
+              "key": "Content-Length",
+              "value": "70"
+            },
+            {
+              "key": "ETag",
+              "value": "W/\"46-/bXfp1oc0amjRB/lCj3WBIAjNDY\""
+            },
+            {
+              "key": "Date",
+              "value": "Thu, 22 Oct 2026 03:18:43 GMT"
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "key": "Keep-Alive",
+              "value": "timeout=5"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              123,
+              34,
+              115,
+              116,
+              97,
+              116,
+              117,
+              115,
+              34,
+              58,
+              34,
+              101,
+              114,
+              114,
+              111,
+              114,
+              34,
+              44,
+              34,
+              109,
+              101,
+              115,
+              115,
+              97,
+              103,
+              101,
+              34,
+              58,
+              34,
+              70,
+              105,
+              101,
+              108,
+              100,
+              32,
+              107,
+              111,
+              100,
+              101,
+              75,
+              111,
+              108,
+              97,
+              109,
+              32,
+              119,
+              97,
+              106,
+              105,
+              98,
+              32,
+              100,
+              105,
+              105,
+              115,
+              105,
+              34,
+              44,
+              34,
+              100,
+              97,
+              116,
+              97,
+              34,
+              58,
+              110,
+              117,
+              108,
+              108,
+              125
+            ]
+          },
+          "cookie": [],
+          "responseTime": 1,
+          "responseSize": 70
+        },
+        "id": "7c24980a-8aa5-4532-97b2-9c3323355a8d",
+        "assertions": [
+          {
+            "assertion": "Status 400",
+            "skipped": false
+          },
+          {
+            "assertion": "Error JSON konsisten",
+            "skipped": false
+          }
+        ]
+      },
+      {
+        "cursor": {
+          "ref": "7c080566-137d-4436-a091-c7ff3ffa4315",
+          "length": 8,
+          "cycles": 1,
+          "position": 7,
+          "iteration": 0,
+          "httpRequestId": "6d57a3d4-41b5-4f12-b54b-8e4681a54e24"
+        },
+        "item": {
+          "id": "4a2573e4-653c-4d84-9a96-8ecbcfbaaea5",
+          "name": "GET Kolam Tidak Ada (Negatif)",
+          "request": {
+            "url": {
+              "path": [
+                "fish-ponds",
+                "999999"
+              ],
+              "host": [
+                "{{base_url}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "e9961937-6526-49be-bb91-a7aec9eea8d5",
+                "type": "text/javascript",
+                "packages": {},
+                "exec": [
+                  "pm.test('Status 404',()=>pm.expect(pm.response.code).to.eql(404));",
+                  "const r=pm.response.json();",
+                  "pm.test('Error JSON konsisten',()=>{pm.expect(r.status).to.eql('error'); pm.expect(r.data).to.be.null;});"
+                ],
+                "_lastExecutionId": "ef57a562-fc8c-4aca-8524-cb60f531666a"
+              }
+            }
+          ]
+        },
+        "request": {
+          "url": {
+            "protocol": "http",
+            "port": "3001",
+            "path": [
+              "fish-ponds",
+              "999999"
+            ],
+            "host": [
+              "localhost"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "a9456a67-1632-49a7-942f-ce7beca0dec9",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "localhost:3001",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            }
+          ],
+          "method": "GET"
+        },
+        "response": {
+          "id": "7ea631a4-c5a0-4caa-8c59-86815feef14f",
+          "status": "Not Found",
+          "code": 404,
+          "header": [
+            {
+              "key": "X-Powered-By",
+              "value": "Express"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json; charset=utf-8"
+            },
+            {
+              "key": "Content-Length",
+              "value": "80"
+            },
+            {
+              "key": "ETag",
+              "value": "W/\"50-y0rYzxnZdb99Js89IbQ/OjKkJqA\""
+            },
+            {
+              "key": "Date",
+              "value": "Thu, 22 Oct 2026 03:18:43 GMT"
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "key": "Keep-Alive",
+              "value": "timeout=5"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              123,
+              34,
+              115,
+              116,
+              97,
+              116,
+              117,
+              115,
+              34,
+              58,
+              34,
+              101,
+              114,
+              114,
+              111,
+              114,
+              34,
+              44,
+              34,
+              109,
+              101,
+              115,
+              115,
+              97,
+              103,
+              101,
+              34,
+              58,
+              34,
+              68,
+              97,
+              116,
+              97,
+              32,
+              100,
+              101,
+              110,
+              103,
+              97,
+              110,
+              32,
+              105,
+              100,
+              32,
+              57,
+              57,
+              57,
+              57,
+              57,
+              57,
+              32,
+              116,
+              105,
+              100,
+              97,
+              107,
+              32,
+              100,
+              105,
+              116,
+              101,
+              109,
+              117,
+              107,
+              97,
+              110,
+              34,
+              44,
+              34,
+              100,
+              97,
+              116,
+              97,
+              34,
+              58,
+              110,
+              117,
+              108,
+              108,
+              125
+            ]
+          },
+          "cookie": [],
+          "responseTime": 2,
+          "responseSize": 80
+        },
+        "id": "4a2573e4-653c-4d84-9a96-8ecbcfbaaea5",
+        "assertions": [
+          {
+            "assertion": "Status 404",
+            "skipped": false
+          },
+          {
+            "assertion": "Error JSON konsisten",
+            "skipped": false
+          }
+        ]
+      }
+    ],
+    "transfers": {
+      "responseTotal": 1226
+    },
+    "failures": [],
+    "error": null
+  }
+}
