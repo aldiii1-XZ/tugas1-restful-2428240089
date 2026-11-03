@@ -1,0 +1,356 @@
+{
+  "info": {
+    "_postman_id": "b3f1c2a4-2026-11-03-tugas3-2428240089",
+    "name": "Tugas 3 - MongoDB Kolam Ikan (2428240089)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Tugas 3 PAW2: MongoDB + embedding (ikan) + referencing (pemilik) + filtering, pagination, sorting, projection."
+  },
+  "item": [
+    {
+      "name": "01 - Info API",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('status 200', () => pm.response.to.have.status(200));",
+              "const j = pm.response.json();",
+              "pm.test('database MongoDB', () => pm.expect(j.database).to.include('MongoDB'));"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/"
+      },
+      "response": []
+    },
+    {
+      "name": "02 - Ambil Semua Kolam (+ meta)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('status 200', () => pm.response.to.have.status(200));",
+              "const j = pm.response.json();",
+              "pm.test('ada data dan meta', () => { pm.expect(j.data.length).to.be.above(0); pm.expect(j.meta.total).to.be.above(0); });",
+              "pm.test('ikan embedded + pemilik populated', () => { pm.expect(j.data[0].ikan).to.be.an('array'); pm.expect(j.data[0].pemilik.nama).to.be.a('string'); });",
+              "pm.collectionVariables.set('kolam_id', j.data[0]._id);"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/fish-ponds"
+      },
+      "response": []
+    },
+    {
+      "name": "03 - Filtering jenisIkan=lele",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('status 200', () => pm.response.to.have.status(200));",
+              "const j = pm.response.json();",
+              "pm.test('tersaring hanya lele', () => { pm.expect(j.meta.total).to.eql(2); j.data.forEach(d => pm.expect(d.jenisIkan).to.eql('lele')); });"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/fish-ponds?jenisIkan=lele"
+      },
+      "response": []
+    },
+    {
+      "name": "04 - Pagination page=2&limit=2",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('status 200', () => pm.response.to.have.status(200));",
+              "const j = pm.response.json();",
+              "pm.test('halaman 2 dari 2', () => { pm.expect(j.meta.page).to.eql(2); pm.expect(j.meta.totalPages).to.eql(2); pm.expect(j.data.length).to.be.at.most(2); });"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/fish-ponds?page=2&limit=2"
+      },
+      "response": []
+    },
+    {
+      "name": "05 - Sorting jumlahBibit desc",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('status 200', () => pm.response.to.have.status(200));",
+              "const j = pm.response.json();",
+              "pm.test('urut turun', () => { for (let i = 1; i < j.data.length; i++) pm.expect(j.data[i-1].jumlahBibit).to.be.at.least(j.data[i].jumlahBibit); });"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/fish-ponds?sort=jumlahBibit&order=desc"
+      },
+      "response": []
+    },
+    {
+      "name": "06 - Projection fields=kodeKolam,jenisIkan,jumlahBibit",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('status 200', () => pm.response.to.have.status(200));",
+              "const j = pm.response.json();",
+              "pm.test('hanya field yang dipilih', () => { pm.expect(j.data[0]).to.have.property('kodeKolam'); pm.expect(j.data[0]).to.not.have.property('pemilik'); pm.expect(j.data[0]).to.not.have.property('luasM2'); });"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/fish-ponds?fields=kodeKolam,jenisIkan,jumlahBibit"
+      },
+      "response": []
+    },
+    {
+      "name": "07 - Kombinasi 4 fitur",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('status 200', () => pm.response.to.have.status(200));",
+              "const j = pm.response.json();",
+              "pm.test('kombinasi bekerja', () => { pm.expect(j.data.length).to.eql(1); pm.expect(j.data[0].kodeKolam).to.eql('K-03'); pm.expect(j.data[0]).to.not.have.property('pemilik'); });"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/fish-ponds?jenisIkan=lele&limit=1&sort=tanggalTebar&order=desc&fields=kodeKolam,jenisIkan,tanggalTebar"
+      },
+      "response": []
+    },
+    {
+      "name": "08 - Detail + Pemilik (referencing)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('status 200', () => pm.response.to.have.status(200));",
+              "const j = pm.response.json();",
+              "pm.test('pemilik ikut terisi (populate)', () => { pm.expect(j.pemilik.nama).to.be.a('string'); pm.expect(j.ikan[0].namaIkan).to.be.a('string'); });",
+              "pm.collectionVariables.set('pemilik_id', j.pemilik._id);"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/fish-ponds/{{kolam_id}}"
+      },
+      "response": []
+    },
+    {
+      "name": "09 - Tambah Kolam (embedding + referencing)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('status 201', () => pm.response.to.have.status(201));",
+              "const j = pm.response.json();",
+              "pm.test('ikan tertanam + pemilik tertaut', () => { pm.expect(j.data.ikan[0].namaIkan).to.eql('Gurame Soang'); pm.expect(j.data.pemilik).to.be.a('string'); });",
+              "pm.collectionVariables.set('kolam_baru_id', j.data._id);"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/fish-ponds",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"kodeKolam\": \"K-04\",\n  \"jenisIkan\": \"gurame\",\n  \"jumlahBibit\": 1200,\n  \"luasM2\": 18,\n  \"tanggalTebar\": \"2026-10-01\",\n  \"ikan\": [\n    {\n      \"namaIkan\": \"Gurame Soang\",\n      \"jumlah\": 1200,\n      \"umurHari\": 12\n    }\n  ],\n  \"pemilik\": \"{{pemilik_id}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "10 - Tambah Tidak Valid (400)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('status 400', () => pm.response.to.have.status(400));",
+              "pm.test('pesan validasi', () => pm.expect(pm.response.json().message).to.include('jenisIkan'));"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/fish-ponds",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"kodeKolam\": \"K-99\",\n  \"jumlahBibit\": 100,\n  \"luasM2\": 10,\n  \"tanggalTebar\": \"2026-10-02\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "11 - Ubah Kolam (PUT)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('status 200', () => pm.response.to.have.status(200));",
+              "const j = pm.response.json();",
+              "pm.test('data berubah', () => { pm.expect(j.data.jumlahBibit).to.eql(1500); pm.expect(j.data.pemilik).to.be.a('string'); });"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/fish-ponds/{{kolam_baru_id}}",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"kodeKolam\": \"K-04\",\n  \"jenisIkan\": \"gurame\",\n  \"jumlahBibit\": 1500,\n  \"luasM2\": 20,\n  \"tanggalTebar\": \"2026-10-01\",\n  \"ikan\": [\n    {\n      \"namaIkan\": \"Gurame Soang\",\n      \"jumlah\": 1500,\n      \"umurHari\": 20\n    }\n  ],\n  \"pemilik\": \"{{pemilik_id}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "12 - Hapus Kolam (DELETE)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('status 200', () => pm.response.to.have.status(200));",
+              "pm.test('pesan hapus', () => pm.expect(pm.response.json().message).to.include('berhasil dihapus'));"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": "{{base_url}}/fish-ponds/{{kolam_baru_id}}"
+      },
+      "response": []
+    },
+    {
+      "name": "13 - Id Terhapus jadi 404",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('status 404', () => pm.response.to.have.status(404));"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/fish-ponds/{{kolam_baru_id}}"
+      },
+      "response": []
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:3001"
+    },
+    {
+      "key": "kolam_id",
+      "value": ""
+    },
+    {
+      "key": "pemilik_id",
+      "value": ""
+    },
+    {
+      "key": "kolam_baru_id",
+      "value": ""
+    }
+  ]
+}
